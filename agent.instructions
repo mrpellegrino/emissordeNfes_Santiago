@@ -1,0 +1,135 @@
+# INSTRUÇÕES PARA DESENVOLVIMENTO DO SISTEMA DE EMISSÃO DE NOTAS FISCAIS DE SERVIÇO
+
+## VISÃO GERAL DO PROJETO
+Desenvolver uma aplicação web completa para gestão escolar com foco na emissão automatizada de notas fiscais de serviços educacionais através da API do Bling.
+
+## ESTRUTURA TÉCNICA
+- **Backend**: Node.js com NestJS + TypeScript
+- **Frontend**: React.js com TypeScript + Vite
+- **Banco de Dados**: PostgreSQL com TypeORM
+- **API Externa**: Bling API v3 para emissão de NFSe
+- **Autenticação**: JWT
+
+## FUNCIONALIDADES PRINCIPAIS
+
+### 1. SISTEMA DE AUTENTICAÇÃO E AUTORIZAÇÃO
+- **Usuário Administrador**: 
+  - Pode gerenciar outros usuários (criar, editar, excluir)
+  - Acesso completo a todas as funcionalidades
+- **Usuário Operador**: 
+  - Não pode gerenciar usuários
+  - Acesso apenas às operações de cadastro e emissão de notas
+- Implementar middleware de autenticação JWT
+- Proteção de rotas baseada em perfis de usuário
+
+### 2. GESTÃO DE ALUNOS E RESPONSÁVEIS FINANCEIROS
+- **Importação via planilha**:
+  - Permitir upload de arquivo Excel/CSV
+  - Campos obrigatórios: Nome do aluno, ano/série, dados do responsável financeiro
+  - Validação de dados antes da importação
+- **Cadastro manual**:
+  - Formulário para cadastro individual
+  - Dados do responsável: Nome, CPF/CNPJ, endereço, telefone, email
+- **Organização por turmas**:
+  - Criar entidades separadas para Turmas e Alunos
+  - Relacionamento Turma → Alunos (1:N)
+
+### 3. CONTROLE DE MENSALIDADES
+- **Sistema de 12 mensalidades anuais**
+- **Interface tabular**:
+  - Linhas: Nomes dos alunos da turma selecionada
+  - Colunas: 12 meses do ano
+  - Células: Checkbox para marcar pagamento realizado
+- **Estados das mensalidades**:
+  - Não pago (padrão)
+  - Pago (marcado pelo usuário)
+  - Nota emitida (com número da NFSe)
+  - Com erro na emissão
+
+### 4. FILA DE EMISSÃO DE NOTAS FISCAIS
+- **Quando marcar pagamento**: Adicionar automaticamente à fila de emissão
+- **Funcionalidade "Emitir Notas Pendentes"**:
+  - Processar todas as mensalidades marcadas como pagas
+  - Chamar API do Bling para cada nota
+  - Atualizar status após emissão
+- **Tratamento de erros**: Log de tentativas e falhas na emissão
+
+### 5. INTEGRAÇÃO COM API DO BLING (NFSe)
+- **Endpoint principal**: `/nfse` (POST para criar NFSe)
+- **Dados obrigatórios para NFSe**:
+  - Contato (responsável financeiro)
+  - Descrição do serviço
+  - Valor da mensalidade
+  - Data de competência
+  - Código do serviço municipal
+  - Alíquota de impostos
+- **Configuração**: Endpoint para configurar dados da empresa (`/nfse/configuracoes`)
+- **Status da nota**: Verificar se foi enviada/autorizada
+- **Cancelamento**: Implementar funcionalidade de cancelar NFSe se necessário
+
+### 6. DOWNLOAD E VISUALIZAÇÃO DE NOTAS
+- **Número clicável**: Após emissão, mostrar número da NFSe como link
+- **Download do PDF**: Obter PDF da nota através da API do Bling
+- **Histórico**: Manter registro de todas as notas emitidas
+
+### 7. EXPORTAÇÃO DE DADOS
+- **Relatório completo**: Exportar todos os dados dos alunos para planilha Excel
+- **Filtros**: Por turma, período, status de pagamento
+- **Formato**: Excel com múltiplas abas (dados gerais, mensalidades, notas emitidas)
+
+## MODELO DE DADOS PRINCIPAIS
+
+### Entidades
+```typescript
+// Usuario
+- id, nome, email, senha, perfil (admin/operador), ativo
+
+// Turma  
+- id, nome, ano, ativa
+
+// Aluno
+- id, nome, turmaId, responsavelId, ativo
+
+// ResponsavelFinanceiro
+- id, nome, cpfCnpj, endereco, telefone, email
+
+// Mensalidade
+- id, alunoId, mes, ano, valor, statusPagamento, numeroNfse, dataEmissao, dataPagamento
+
+// FilaEmissao
+- id, mensalidadeId, tentativas, ultimaExecucao, erro
+```
+
+## FLUXO DE TRABALHO TÍPICO
+1. Usuário faz login no sistema
+2. Seleciona uma turma
+3. Visualiza tabela de alunos x mensalidades
+4. Marca mensalidades pagas (adiciona à fila automaticamente)
+5. Executa "Emitir Notas Pendentes"
+6. Sistema processa fila e chama API Bling
+7. Atualiza interface com números das notas
+8. Usuário pode clicar no número para baixar PDF
+
+## CONFIGURAÇÕES NECESSÁRIAS
+- **Bling API**: Token de acesso, configurações da empresa
+- **Valores**: Valor padrão da mensalidade por turma/ano
+- **Impostos**: Configuração de alíquotas e códigos de serviço
+- **Templates**: Descrição padrão para as notas de serviço educacional
+
+## TRATAMENTO DE ERROS
+- Validação rigorosa antes de envio para Bing
+- Retry automático para falhas temporárias
+- Interface para reprocessar notas com erro
+- Logs detalhados de todas as operações
+
+## SEGURANÇA
+- Validação de entrada em todos os endpoints
+- Sanitização de dados de planilhas importadas
+- Controle de acesso baseado em perfis
+- Auditoria de operações críticas (emissão de notas)
+
+## PERFORMANCE
+- Paginação nas listagens de alunos
+- Processamento em lotes para emissão de múltiplas notas
+- Cache de configurações do Bling
+- Índices otimizados no banco de dados

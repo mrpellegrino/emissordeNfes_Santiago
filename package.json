@@ -1,0 +1,36 @@
+{
+  "name": "nfse-sistema",
+  "version": "1.0.0",
+  "description": "Sistema de Emissão de Notas Fiscais de Serviço para Escolas",
+  "scripts": {
+    "backend": "cd backend && npm run start:dev",
+    "frontend": "cd frontend && npm run dev",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "test:backend": "cd backend && npm run test",
+    "test:frontend": "cd frontend && npm run test"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "nestjs",
+    "react",
+    "typescript",
+    "nfse",
+    "bling",
+    "escola"
+  ],
+  "author": "",
+  "license": "MIT"
+}

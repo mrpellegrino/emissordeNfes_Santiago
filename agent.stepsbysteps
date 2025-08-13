@@ -1,0 +1,427 @@
+# PASSO A PASSO DETALHADO - SISTEMA DE EMISSÃO DE NOTAS FISCAIS DE SERVIÇO
+
+## FASE 1: CONFIGURAÇÃO INICIAL DO PROJETO
+
+### 1.1 Configuração do Backend (NestJS)
+- [ ] Navegar para pasta backend
+- [ ] Verificar se todas as dependências estão instaladas
+- [ ] Instalar dependências adicionais necessárias:
+  ```bash
+  npm install @nestjs/typeorm typeorm pg
+  npm install @nestjs/jwt @nestjs/passport passport passport-jwt
+  npm install bcryptjs multer xlsx
+  npm install class-validator class-transformer
+  npm install @nestjs/config
+  npm install axios # Para integração com Bling API
+  ```
+- [ ] Configurar variáveis de ambiente (.env):
+  ```
+  DATABASE_HOST=localhost
+  DATABASE_PORT=5432
+  DATABASE_USERNAME=postgres
+  DATABASE_PASSWORD=senha
+  DATABASE_NAME=nfse_sistema
+  JWT_SECRET=seu_jwt_secret_aqui
+  BLING_API_TOKEN=seu_token_bling_aqui
+  BLING_API_URL=https://api.bling.com.br/Api/v3
+  ```
+
+### 1.2 Configuração do Frontend (React + Vite)
+- [ ] Navegar para pasta frontend
+- [ ] Verificar se todas as dependências estão instaladas
+- [ ] Instalar dependências adicionais:
+  ```bash
+  npm install react-router-dom
+  npm install axios
+  npm install @types/react-router-dom
+  npm install lucide-react # Para ícones
+  npm install react-hot-toast # Para notificações
+  npm install react-hook-form
+  npm install xlsx # Para manipulação de planilhas
+  ```
+
+### 1.3 Configuração do Banco de Dados
+- [ ] Instalar PostgreSQL localmente ou configurar container Docker
+- [ ] Criar database 'nfse_sistema'
+- [ ] Configurar conexão no data-source.ts do backend
+
+## FASE 2: ESTRUTURA BASE DO BACKEND
+
+### 2.1 Configuração do TypeORM e Entidades
+- [ ] Criar entidade Usuario:
+  ```typescript
+  // src/entities/usuario.entity.ts
+  - id (UUID, PK)
+  - nome (string)
+  - email (string, unique)
+  - senha (string, hashed)
+  - perfil (enum: 'admin' | 'operador')
+  - ativo (boolean)
+  - createdAt, updatedAt
+  ```
+
+- [ ] Criar entidade Turma:
+  ```typescript
+  // src/entities/turma.entity.ts
+  - id (UUID, PK)
+  - nome (string)
+  - ano (number)
+  - ativa (boolean)
+  - createdAt, updatedAt
+  ```
+
+- [ ] Criar entidade ResponsavelFinanceiro:
+  ```typescript
+  // src/entities/responsavel-financeiro.entity.ts
+  - id (UUID, PK)
+  - nome (string)
+  - cpfCnpj (string)
+  - endereco (string)
+  - telefone (string)
+  - email (string)
+  - createdAt, updatedAt
+  ```
+
+- [ ] Criar entidade Aluno:
+  ```typescript
+  // src/entities/aluno.entity.ts
+  - id (UUID, PK)
+  - nome (string)
+  - turmaId (UUID, FK)
+  - responsavelId (UUID, FK)
+  - ativo (boolean)
+  - createdAt, updatedAt
+  ```
+
+- [ ] Criar entidade Mensalidade:
+  ```typescript
+  // src/entities/mensalidade.entity.ts
+  - id (UUID, PK)
+  - alunoId (UUID, FK)
+  - mes (number 1-12)
+  - ano (number)
+  - valor (decimal)
+  - statusPagamento (enum: 'nao_pago' | 'pago' | 'nota_emitida' | 'erro_emissao')
+  - numeroNfse (string, nullable)
+  - dataEmissao (date, nullable)
+  - dataPagamento (date, nullable)
+  - createdAt, updatedAt
+  ```
+
+- [ ] Criar entidade FilaEmissao:
+  ```typescript
+  // src/entities/fila-emissao.entity.ts
+  - id (UUID, PK)
+  - mensalidadeId (UUID, FK)
+  - tentativas (number, default: 0)
+  - ultimaExecucao (date, nullable)
+  - erro (text, nullable)
+  - processada (boolean, default: false)
+  - createdAt, updatedAt
+  ```
+
+### 2.2 Módulos e Serviços Base
+- [ ] Criar módulo de autenticação (AuthModule)
+  - AuthController
+  - AuthService (login, validação JWT)
+  - JwtStrategy
+  - AuthGuard
+  - RolesGuard (para admin/operador)
+
+- [ ] Criar módulo de usuários (UsuariosModule)
+  - UsuariosController (CRUD, apenas admin)
+  - UsuariosService
+  - CreateUsuarioDto, UpdateUsuarioDto
+
+- [ ] Criar módulo de turmas (TurmasModule)
+  - TurmasController
+  - TurmasService
+  - CreateTurmaDto, UpdateTurmaDto
+
+- [ ] Criar módulo de alunos (AlunosModule)
+  - AlunosController
+  - AlunosService
+  - CreateAlunoDto, UpdateAlunoDto, ImportAlunosDto
+
+- [ ] Criar módulo de responsáveis (ResponsaveisModule)
+  - ResponsaveisController
+  - ResponsaveisService
+  - CreateResponsavelDto, UpdateResponsavelDto
+
+## FASE 3: FUNCIONALIDADES CORE DO BACKEND
+
+### 3.1 Sistema de Autenticação
+- [ ] Implementar endpoint POST /auth/login
+- [ ] Implementar hash de senhas com bcryptjs
+- [ ] Implementar geração e validação de JWT
+- [ ] Criar decoradores para proteção de rotas
+- [ ] Implementar middleware de autorização por perfil
+
+### 3.2 CRUD Básico de Entidades
+- [ ] Implementar CRUD completo de Usuários (apenas admin)
+- [ ] Implementar CRUD completo de Turmas
+- [ ] Implementar CRUD completo de Alunos
+- [ ] Implementar CRUD completo de Responsáveis Financeiros
+- [ ] Implementar relacionamentos entre entidades
+
+### 3.3 Importação de Planilhas
+- [ ] Criar endpoint POST /alunos/importar
+- [ ] Implementar parsing de arquivo Excel/CSV
+- [ ] Validar dados da planilha:
+  - Campos obrigatórios
+  - Formato de CPF/CNPJ
+  - Formato de email
+  - Duplicatas
+- [ ] Criar responsáveis financeiros automaticamente se não existirem
+- [ ] Retornar relatório de importação (sucessos/erros)
+
+### 3.4 Sistema de Mensalidades
+- [ ] Criar endpoint GET /turmas/:id/mensalidades
+- [ ] Implementar auto-criação de 12 mensalidades para cada aluno
+- [ ] Criar endpoint PATCH /mensalidades/:id/marcar-pago
+- [ ] Implementar lógica para adicionar à fila de emissão automaticamente
+
+## FASE 4: INTEGRAÇÃO COM BLING API
+
+### 4.1 Serviço de Integração Bling
+- [ ] Criar BlingModule e BlingService
+- [ ] Implementar autenticação com API Bling
+- [ ] Criar método para criar/obter contatos no Bling
+- [ ] Criar método para emitir NFSe
+- [ ] Criar método para obter PDF da nota
+- [ ] Implementar tratamento de erros da API
+
+### 4.2 Processamento da Fila de Emissão
+- [ ] Criar FilaEmissaoModule e FilaEmissaoService
+- [ ] Implementar endpoint POST /fila-emissao/processar
+- [ ] Lógica de processamento:
+  1. Buscar mensalidades na fila
+  2. Para cada mensalidade:
+     - Verificar/criar contato no Bling
+     - Emitir NFSe via API Bling
+     - Atualizar status da mensalidade
+     - Remover da fila ou marcar erro
+- [ ] Implementar retry para falhas temporárias
+- [ ] Log detalhado de todas as operações
+
+### 4.3 Endpoints de NFSe
+- [ ] Criar endpoint GET /nfse/:numeroNfse/pdf
+- [ ] Implementar cache local de PDFs
+- [ ] Criar endpoint para reprocessar notas com erro
+- [ ] Implementar endpoint para cancelar NFSe
+
+## FASE 5: FRONTEND - ESTRUTURA BASE
+
+### 5.1 Configuração do Roteamento
+- [ ] Configurar React Router
+- [ ] Criar rotas protegidas
+- [ ] Implementar redirecionamento baseado em autenticação
+- [ ] Criar layout base da aplicação
+
+### 5.2 Contexto de Autenticação
+- [ ] Criar AuthContext
+- [ ] Implementar hook useAuth
+- [ ] Gerenciar token JWT no localStorage
+- [ ] Implementar auto-logout em caso de token expirado
+
+### 5.3 Serviços de API
+- [ ] Configurar Axios com interceptors
+- [ ] Criar serviços para cada módulo:
+  - authService (login, logout, verificar token)
+  - usuariosService
+  - turmasService
+  - alunosService
+  - responsaveisService
+  - mensalidadesService
+
+### 5.4 Componentes Base
+- [ ] Header/Navbar com menu de navegação
+- [ ] Sidebar para navegação
+- [ ] Componente de Loading
+- [ ] Componente de Error
+- [ ] Modal genérico
+- [ ] Componente de Confirmação
+
+## FASE 6: FRONTEND - TELAS PRINCIPAIS
+
+### 6.1 Tela de Login
+- [ ] Formulário de login (email/senha)
+- [ ] Validação de campos
+- [ ] Integração com AuthContext
+- [ ] Tratamento de erros de autenticação
+- [ ] Redirecionamento após login
+
+### 6.2 Dashboard Principal
+- [ ] Layout responsivo
+- [ ] Cards com estatísticas:
+  - Total de alunos
+  - Mensalidades pagas no mês
+  - Notas emitidas
+  - Notas pendentes
+- [ ] Gráficos simples (opcional)
+
+### 6.3 Gestão de Usuários (apenas admin)
+- [ ] Listagem de usuários com paginação
+- [ ] Formulário de criação de usuário
+- [ ] Formulário de edição de usuário
+- [ ] Ação de ativar/desativar usuário
+- [ ] Filtros e busca
+
+### 6.4 Gestão de Turmas
+- [ ] Listagem de turmas
+- [ ] Formulário de criação/edição de turma
+- [ ] Ação de ativar/desativar turma
+- [ ] Visualizar quantidade de alunos por turma
+
+### 6.5 Gestão de Alunos
+- [ ] Listagem de alunos com filtro por turma
+- [ ] Formulário de cadastro manual de aluno
+- [ ] Formulário de edição de aluno
+- [ ] Upload e processamento de planilha
+- [ ] Visualização de erros de importação
+
+## FASE 7: FRONTEND - FUNCIONALIDADE PRINCIPAL
+
+### 7.1 Interface de Mensalidades
+- [ ] Seletor de turma
+- [ ] Tabela dinâmica:
+  - Linhas: alunos da turma
+  - Colunas: 12 meses do ano
+  - Células: checkbox para marcar pagamento
+- [ ] Estados visuais diferentes:
+  - Não pago (cinza)
+  - Pago (verde)
+  - Nota emitida (azul com número clicável)
+  - Erro (vermelho)
+- [ ] Ações em lote:
+  - Marcar toda uma linha (aluno)
+  - Marcar toda uma coluna (mês)
+
+### 7.2 Processamento de Notas
+- [ ] Botão "Emitir Notas Pendentes"
+- [ ] Modal de confirmação
+- [ ] Barra de progresso durante processamento
+- [ ] Relatório de resultados:
+  - Notas emitidas com sucesso
+  - Erros ocorridos
+  - Tempo de processamento
+- [ ] Botão para reprocessar erros
+
+### 7.3 Visualização de Notas
+- [ ] Números de NFSe clicáveis na tabela
+- [ ] Modal para preview da nota
+- [ ] Download direto do PDF
+- [ ] Histórico de notas emitidas
+
+## FASE 8: FUNCIONALIDADES COMPLEMENTARES
+
+### 8.1 Exportação de Dados
+- [ ] Botão "Exportar Dados"
+- [ ] Seleção de filtros:
+  - Turma específica ou todas
+  - Período (mês/ano)
+  - Status das mensalidades
+- [ ] Geração de Excel com múltiplas abas:
+  - Dados gerais dos alunos
+  - Mensalidades por período
+  - Notas fiscais emitidas
+- [ ] Download automático do arquivo
+
+### 8.2 Configurações do Sistema
+- [ ] Tela de configurações (apenas admin)
+- [ ] Configuração da API Bling:
+  - Token de acesso
+  - URL da API
+  - Teste de conexão
+- [ ] Configurações de mensalidades:
+  - Valor padrão por turma
+  - Descrição padrão do serviço
+  - Códigos municipais
+- [ ] Configurações de impostos
+
+### 8.3 Logs e Auditoria
+- [ ] Tela de logs de operações
+- [ ] Filtros por:
+  - Usuário
+  - Tipo de operação
+  - Data/período
+  - Status (sucesso/erro)
+- [ ] Detalhes de cada operação
+- [ ] Exportação de logs
+
+## FASE 9: TESTES E VALIDAÇÕES
+
+### 9.1 Testes Backend
+- [ ] Testes unitários dos serviços principais
+- [ ] Testes de integração com banco de dados
+- [ ] Testes de endpoints da API
+- [ ] Testes de integração com Bling API (mock)
+- [ ] Testes de validação de dados
+
+### 9.2 Testes Frontend
+- [ ] Testes de componentes críticos
+- [ ] Testes de fluxos principais:
+  - Login/logout
+  - Importação de planilha
+  - Marcação de mensalidades
+  - Emissão de notas
+- [ ] Testes de responsividade
+
+### 9.3 Testes de Integração E2E
+- [ ] Fluxo completo de uso
+- [ ] Teste de diferentes perfis de usuário
+- [ ] Teste de cenários de erro
+- [ ] Performance em lotes grandes
+
+## FASE 10: MELHORIAS E DEPLOY
+
+### 10.1 Otimizações
+- [ ] Implementar paginação em todas as listagens
+- [ ] Cache de configurações
+- [ ] Otimização de consultas no banco
+- [ ] Compressão de assets no frontend
+- [ ] Lazy loading de componentes
+
+### 10.2 Configuração para Produção
+- [ ] Variáveis de ambiente para produção
+- [ ] Build otimizado do frontend
+- [ ] Configuração do banco em produção
+- [ ] SSL/HTTPS
+- [ ] Backup automatizado
+
+### 10.3 Documentação
+- [ ] README detalhado do projeto
+- [ ] Documentação da API (Swagger)
+- [ ] Manual do usuário
+- [ ] Guia de instalação
+- [ ] Guia de troubleshooting
+
+## CHECKLIST FINAL
+
+### Validações Obrigatórias Antes do Deploy:
+- [ ] Todos os endpoints funcionando corretamente
+- [ ] Autenticação e autorização implementadas
+- [ ] Integração com Bling API testada
+- [ ] Interface responsiva em diferentes dispositivos
+- [ ] Importação de planilhas funcionando
+- [ ] Emissão de notas funcionando
+- [ ] Download de PDFs funcionando
+- [ ] Exportação de dados funcionando
+- [ ] Tratamento de erros implementado
+- [ ] Logs de auditoria funcionando
+- [ ] Backup do banco configurado
+- [ ] SSL/HTTPS configurado
+- [ ] Performance testada com dados reais
+- [ ] Documentação completa
+
+### Funcionalidades Essenciais (MVP):
+1. ✅ Login com dois perfis (admin/operador)
+2. ✅ Cadastro manual de alunos e responsáveis
+3. ✅ Importação via planilha
+4. ✅ Organização por turmas
+5. ✅ Tabela de mensalidades (alunos x 12 meses)
+6. ✅ Marcação de pagamentos
+7. ✅ Fila automática de emissão
+8. ✅ Integração com Bling para NFSe
+9. ✅ Download de PDFs das notas
+10. ✅ Exportação de dados para planilha
