@@ -1,5 +1,13 @@
 # PASSO A PASSO DETALHADO - SISTEMA DE EMISSÃO DE NOTAS FISCAIS DE SERVIÇO
 
+## 📋 IMPORTANTE: ATUALIZAÇÃO DO JSON DE REFERÊNCIA DA API
+Em cada implementação de módulo ou endpoint, é OBRIGATÓRIO atualizar o arquivo `postman-collection.json` com:
+- Novos endpoints criados
+- Exemplos de requisições e respostas
+- Headers de autenticação necessários
+- Validações e casos de erro
+- Documentação no arquivo `POSTMAN_GUIDE.md`
+
 ## FASE 1: CONFIGURAÇÃO INICIAL DO PROJETO
 
 ### 1.1 Configuração do Backend (NestJS)
@@ -71,6 +79,7 @@
 - [x] DTOs para LoginDto e AuthResponseDto
 - [x] Configuração de CORS e validação global
 - [x] Testes funcionais da API de autenticação
+- [x] Atualizar JSON de referência da API para testes (Postman collection)
 
 - [x] Criar módulo de usuários (UsuariosModule) ✅ CONCLUÍDO
 - [x] UsuariosController (CRUD completo, apenas admin)
@@ -80,21 +89,27 @@
 - [x] Validações de email único e proteção do último admin
 - [x] Endpoint de ativar/desativar usuário
 - [x] Hash automático de senhas com bcryptjs
+- [x] Atualizar JSON de referência da API para testes (Postman collection)
 
 - [x] Criar módulo de turmas (TurmasModule) ✅ CONCLUÍDO
   - TurmasController
   - TurmasService
   - CreateTurmaDto, UpdateTurmaDto
+  - Atualizar JSON de referência da API para testes (Postman collection)
 
 - [x] Criar módulo de alunos (AlunosModule) ✅ CONCLUÍDO
   - AlunosController
   - AlunosService
   - CreateAlunoDto, UpdateAlunoDto, ImportAlunosDto
+  - Funcionalidades de mensalidade personalizada
+  - Endpoints para atualizar e consultar mensalidade
+  - Atualizar JSON de referência da API para testes (Postman collection)
 
 - [ ] Criar módulo de responsáveis (ResponsaveisModule)
   - ResponsaveisController
   - ResponsaveisService
   - CreateResponsavelDto, UpdateResponsavelDto
+  - Atualizar JSON de referência da API para testes (Postman collection)
 
 ## FASE 3: FUNCIONALIDADES CORE DO BACKEND
 
@@ -111,6 +126,7 @@
 - [ ] Implementar CRUD completo de Alunos
 - [ ] Implementar CRUD completo de Responsáveis Financeiros
 - [ ] Implementar relacionamentos entre entidades
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ### 3.3 Importação de Planilhas
 - [ ] Criar endpoint POST /alunos/importar
@@ -122,12 +138,14 @@
   - Duplicatas
 - [ ] Criar responsáveis financeiros automaticamente se não existirem
 - [ ] Retornar relatório de importação (sucessos/erros)
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ### 3.4 Sistema de Mensalidades
 - [ ] Criar endpoint GET /turmas/:id/mensalidades
 - [ ] Implementar auto-criação de 12 mensalidades para cada aluno
 - [ ] Criar endpoint PATCH /mensalidades/:id/marcar-pago
 - [ ] Implementar lógica para adicionar à fila de emissão automaticamente
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ## FASE 4: INTEGRAÇÃO COM PROVEDORES DE NFSE (ARQUITETURA DESACOPLADA)
 
@@ -162,6 +180,7 @@
 - [ ] Mapear dados padronizados para formato Bling
 - [ ] Implementar tratamento de erros específicos do Bling
 - [ ] Testes unitários do BlingProvider
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ### 4.3 Preparação para PrefeituraProvider
 - [ ] Criar PrefeituraProvider (implementação inicial/mock)
@@ -180,6 +199,7 @@
 - [ ] Logs unificados independente do provider
 - [ ] Retry automático com diferentes providers
 - [ ] Cache de configurações por provider
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ### 4.2 Processamento da Fila de Emissão
 - [ ] Criar FilaEmissaoModule e FilaEmissaoService
@@ -193,12 +213,14 @@
      - Remover da fila ou marcar erro
 - [ ] Implementar retry para falhas temporárias
 - [ ] Log detalhado de todas as operações
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ### 4.3 Endpoints de NFSe
 - [ ] Criar endpoint GET /nfse/:numeroNfse/pdf
 - [ ] Implementar cache local de PDFs
 - [ ] Criar endpoint para reprocessar notas com erro
 - [ ] Implementar endpoint para cancelar NFSe
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ## FASE 5: FRONTEND - ESTRUTURA BASE
 
@@ -316,6 +338,7 @@
   - Mensalidades por período
   - Notas fiscais emitidas
 - [ ] Download automático do arquivo
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ### 8.2 Configurações do Sistema
 - [ ] Tela de configurações (apenas admin)
@@ -328,6 +351,7 @@
   - Descrição padrão do serviço
   - Códigos municipais
 - [ ] Configurações de impostos
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ### 8.3 Logs e Auditoria
 - [ ] Tela de logs de operações
@@ -338,6 +362,7 @@
   - Status (sucesso/erro)
 - [ ] Detalhes de cada operação
 - [ ] Exportação de logs
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ## FASE 9: TESTES E VALIDAÇÕES
 
@@ -347,6 +372,7 @@
 - [ ] Testes de endpoints da API
 - [ ] Testes de integração com Bling API (mock)
 - [ ] Testes de validação de dados
+- [ ] Atualizar JSON de referência da API para testes (Postman collection)
 
 ### 9.2 Testes Frontend
 - [ ] Testes de componentes críticos
@@ -403,6 +429,7 @@
 - [ ] SSL/HTTPS configurado
 - [ ] Performance testada com dados reais
 - [ ] Documentação completa
+- [ ] JSON de referência da API atualizado e validado
 
 ### Funcionalidades Essenciais (MVP):
 1. ✅ Login com dois perfis (admin/operador)
@@ -415,3 +442,4 @@
 8. ✅ Integração com Bling para NFSe
 9. ✅ Download de PDFs das notas
 10. ✅ Exportação de dados para planilha
+11. ✅ JSON de referência da API para testes completo
