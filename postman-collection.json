@@ -348,6 +348,163 @@
       ]
     },
     {
+      "name": "💼 Responsáveis Financeiros",
+      "item": [
+        {
+          "name": "Criar Responsável",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Maria Silva Santos\",\n  \"cpfCnpj\": \"12345678901\",\n  \"email\": \"maria.silva@email.com\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"endereco\": \"Rua das Flores, 123\",\n  \"cidade\": \"São Paulo\",\n  \"estado\": \"SP\",\n  \"cep\": \"01234-567\",\n  \"inscricaoEstadual\": \"\",\n  \"inscricaoMunicipal\": \"\",\n  \"razaoSocial\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis"]
+            }
+          }
+        },
+        {
+          "name": "Listar Todos os Responsáveis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis"]
+            }
+          }
+        },
+        {
+          "name": "Listar Responsáveis Ativos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis/ativos",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis", "ativos"]
+            }
+          }
+        },
+        {
+          "name": "Obter Estatísticas dos Responsáveis",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis/estatisticas",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis", "estatisticas"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Responsável por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis", "1"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Responsável",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Maria Silva Santos (Atualizado)\",\n  \"telefone\": \"(11) 88888-8888\",\n  \"endereco\": \"Rua das Rosas, 456\",\n  \"observacoesMensalidade\": \"Responsável principal - pagamento via PIX\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis", "1"]
+            }
+          }
+        },
+        {
+          "name": "Ativar/Desativar Responsável",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis/1/toggle-active",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis", "1", "toggle-active"]
+            }
+          }
+        },
+        {
+          "name": "Remover Responsável",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "🎓 Alunos",
       "item": [
         {
