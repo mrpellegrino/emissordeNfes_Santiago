@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsOptional, IsDateString, IsNumber, IsNotEmpty, Length } from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsDateString, IsNumber, IsNotEmpty, Length, Min, Max } from 'class-validator';
 
 export class CreateAlunoDto {
   @IsString()
@@ -45,4 +45,26 @@ export class CreateAlunoDto {
   @IsNumber()
   @IsNotEmpty()
   responsavelFinanceiroId: number;
+
+  // Campos de mensalidade personalizada
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  valorMensalidadeCustomizado?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  @Max(100)
+  percentualDesconto?: number;
+
+  @IsNumber()
+  @IsOptional()
+  @Min(0)
+  valorDesconto?: number;
+
+  @IsString()
+  @IsOptional()
+  @Length(1, 500)
+  observacoesMensalidade?: string;
 }

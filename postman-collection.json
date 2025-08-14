@@ -1,0 +1,567 @@
+{
+  "info": {
+    "name": "NFSe Sistema - API Backend",
+    "description": "Sistema de Emissão de Notas Fiscais de Serviço para Escolas",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "🔐 Autenticação",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('token', response.access_token);",
+                  "    console.log('Token salvo:', response.access_token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@santiago.com\",\n  \"senha\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Obter Perfil",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Validar Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/validate-token",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "validate-token"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Usuários",
+      "item": [
+        {
+          "name": "Listar Usuários",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Criar Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Operador Teste\",\n  \"email\": \"operador@santiago.com\",\n  \"senha\": \"operador123\",\n  \"tipo\": \"operador\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Usuário por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "1"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Usuário",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Operador Atualizado\",\n  \"email\": \"operador.novo@santiago.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "2"]
+            }
+          }
+        },
+        {
+          "name": "Ativar/Desativar Usuário",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/2/toggle-active",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "2", "toggle-active"]
+            }
+          }
+        },
+        {
+          "name": "Deletar Usuário",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/2",
+              "host": ["{{baseUrl}}"],
+              "path": ["usuarios", "2"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏫 Turmas",
+      "item": [
+        {
+          "name": "Listar Turmas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas",
+              "host": ["{{baseUrl}}"],
+              "path": ["turmas"]
+            }
+          }
+        },
+        {
+          "name": "Criar Turma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"5º Ano A\",\n  \"serie\": \"5º Ano\",\n  \"turno\": \"matutino\",\n  \"ano\": 2025,\n  \"valorMensalidade\": 450.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/turmas",
+              "host": ["{{baseUrl}}"],
+              "path": ["turmas"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Turma por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["turmas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Turma",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"5º Ano A - Manhã\",\n  \"valorMensalidade\": 475.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["turmas", "1"]
+            }
+          }
+        },
+        {
+          "name": "Ativar/Desativar Turma",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1/toggle-active",
+              "host": ["{{baseUrl}}"],
+              "path": ["turmas", "1", "toggle-active"]
+            }
+          }
+        },
+        {
+          "name": "Deletar Turma",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/turmas/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["turmas", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎓 Alunos",
+      "item": [
+        {
+          "name": "Listar Todos os Alunos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alunos",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos"]
+            }
+          }
+        },
+        {
+          "name": "Listar Alunos por Turma",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alunos?turmaId=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos"],
+              "query": [
+                {
+                  "key": "turmaId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Criar Aluno",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João Silva Santos\",\n  \"matricula\": \"2025001\",\n  \"dataNascimento\": \"2015-03-15\",\n  \"cpf\": \"12345678901\",\n  \"rg\": \"123456789\",\n  \"endereco\": \"Rua das Flores, 123 - Centro\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"email\": \"joao.santos@email.com\",\n  \"turmaId\": 1,\n  \"responsavelFinanceiroId\": 1,\n  \"valorMensalidadeCustomizado\": 500.00,\n  \"percentualDesconto\": 15,\n  \"valorDesconto\": 25.00,\n  \"observacoesMensalidade\": \"Aluno com bolsa de estudos - desconto aplicado\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alunos",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos"]
+            }
+          }
+        },
+        {
+          "name": "Buscar Aluno por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alunos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Aluno",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João Silva Santos Junior\",\n  \"telefone\": \"(11) 88888-8888\",\n  \"email\": \"joao.santos.jr@email.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alunos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Ativar/Desativar Aluno",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alunos/1/toggle-active",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos", "1", "toggle-active"]
+            }
+          }
+        },
+        {
+          "name": "Deletar Aluno",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alunos/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos", "1"]
+            }
+          }
+        },
+        {
+          "name": "Importar Alunos via Excel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Arquivo Excel (.xlsx ou .xls) com dados dos alunos"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alunos/importar",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos", "importar"]
+            }
+          }
+        },
+        {
+          "name": "Atualizar Mensalidade do Aluno",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valorMensalidadeCustomizado\": 450.00,\n  \"percentualDesconto\": 10,\n  \"valorDesconto\": 50.00,\n  \"observacoesMensalidade\": \"Desconto especial - bolsa de estudos parcial\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alunos/1/mensalidade",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos", "1", "mensalidade"]
+            }
+          }
+        },
+        {
+          "name": "Obter Informações de Mensalidade do Aluno",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alunos/1/mensalidade",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos", "1", "mensalidade"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

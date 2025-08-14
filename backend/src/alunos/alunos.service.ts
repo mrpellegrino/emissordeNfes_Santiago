@@ -5,7 +5,7 @@ import * as XLSX from 'xlsx';
 import { Aluno } from '../entities/aluno.entity';
 import { Turma } from '../entities/turma.entity';
 import { ResponsavelFinanceiro } from '../entities/responsavel-financeiro.entity';
-import { CreateAlunoDto, UpdateAlunoDto, ImportResultDto, ImportDetailDto } from './dto';
+import { CreateAlunoDto, UpdateAlunoDto, ImportResultDto, ImportDetailDto, UpdateMensalidadeAlunoDto } from './dto';
 
 @Injectable()
 export class AlunosService {
@@ -201,6 +201,43 @@ export class AlunosService {
     } catch (error) {
       throw new BadRequestException(`Erro ao processar arquivo: ${error.message}`);
     }
+  }
+
+  async updateMensalidade(id: number, updateMensalidadeDto: UpdateMensalidadeAlunoDto): Promise<Aluno> {
+    const aluno = await this.findOne(id);
+
+    // Validar os valores
+    if (updateMensalidadeDto.percentualDesconto !== undefined) {
+      if (updateMensalidadeDto.percentualDesconto < 0 || updateMensalidadeDto.percentualDesconto > 100) {
+        throw new BadRequestException('Percentual de desconto deve estar entre 0 e 100');
+      }
+    }
+
+    if (updateMensalidadeDto.valorDesconto !== undefined && updateMensalidadeDto.valorDesconto < 0) {
+      throw new BadRequestException('Valor de desconto não pode ser negativo');
+    }
+
+    if (updateMensalidadeDto.valorMensalidadeCustomizado !== undefined && updateMensalidadeDto.valorMensalidadeCustomizado < 0) {
+      throw new BadRequestException('Valor da mensalidade customizada não pode ser negativo');
+    }
+
+    // Atualizar os campos
+    Object.assign(aluno, updateMensalidadeDto);
+
+    return this.alunoRepository.save(aluno);
+  }
+
+  async getMensalidadeInfo(id: number): Promise<any> {
+    const aluno = await this.alunoRepository.findOne({
+      where: { id },
+      relations: ['turma']
+    });
+
+    if (!aluno) {
+      throw new NotFoundException('Aluno não encontrado');
+    }
+
+    return aluno.getDetalheMensalidade();
   }
 
   private parseDate(dateValue: any): string {

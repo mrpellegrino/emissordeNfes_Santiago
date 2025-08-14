@@ -1,0 +1,6 @@
+nome,matricula,dataNascimento,cpf,rg,endereco,telefone,email,turmaId,responsavelFinanceiroId
+João Silva Santos,2025001,15/03/2015,12345678901,123456789,"Rua das Flores, 123 - Centro",(11) 99999-9999,joao.santos@email.com,1,1
+Maria Oliveira Lima,2025002,22/07/2014,98765432100,987654321,"Av. Principal, 456 - Jardim",(11) 88888-8888,maria.lima@email.com,1,2
+Pedro Costa Ferreira,2025003,10/11/2015,55566677788,556677889,"Rua das Palmeiras, 789",(11) 77777-7777,pedro.ferreira@email.com,1,3
+Ana Paula Rodrigues,2025004,05/09/2014,33344455566,334455667,"Av. dos Santos, 321 - Vila Nova",(11) 66666-6666,ana.rodrigues@email.com,1,4
+Carlos Eduardo Souza,2025005,18/12/2015,11122233344,112233445,"Rua da Escola, 654",(11) 55555-5555,carlos.souza@email.com,1,5
