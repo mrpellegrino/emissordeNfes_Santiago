@@ -54,18 +54,31 @@ Desenvolver uma aplicação web completa para gestão escolar com foco na emiss�
   - Atualizar status após emissão
 - **Tratamento de erros**: Log de tentativas e falhas na emissão
 
-### 5. INTEGRAÇÃO COM API DO BLING (NFSe)
-- **Endpoint principal**: `/nfse` (POST para criar NFSe)
-- **Dados obrigatórios para NFSe**:
-  - Contato (responsável financeiro)
-  - Descrição do serviço
-  - Valor da mensalidade
-  - Data de competência
-  - Código do serviço municipal
-  - Alíquota de impostos
-- **Configuração**: Endpoint para configurar dados da empresa (`/nfse/configuracoes`)
-- **Status da nota**: Verificar se foi enviada/autorizada
-- **Cancelamento**: Implementar funcionalidade de cancelar NFSe se necessário
+### 5. INTEGRAÇÃO COM PROVEDORES DE NFSe (ARQUITETURA DESACOPLADA)
+
+#### **Arquitetura Strategy Pattern**
+- **Interface NFSeProvider**: Contrato comum para todos os provedores
+- **BlingProvider**: Implementação para API do Bling
+- **PrefeituraProvider**: Implementação para API nativa da prefeitura
+- **NFSeService**: Serviço que utiliza o provider configurado
+
+#### **Principais Operações**
+- **Criar/Obter Contato**: Verificar se contato existe ou criar novo
+- **Emitir NFSe**: Gerar nota fiscal de serviço
+- **Consultar Status**: Verificar se foi enviada/autorizada
+- **Obter PDF**: Download do arquivo da nota
+- **Cancelar NFSe**: Cancelamento de notas (se suportado)
+
+#### **Configuração Flexível**
+- **Provider Ativo**: Configurável via environment/admin
+- **Fallback**: Possibilidade de usar provider alternativo
+- **Logs Unificados**: Rastreamento independente do provider
+- **Validação**: Dados obrigatórios padronizados
+
+#### **Dados Padronizados**
+- **Contato**: Nome, CPF/CNPJ, endereço, email (formato comum)
+- **Serviço**: Descrição, valor, código municipal, alíquotas
+- **Resposta**: Número NFSe, status, erros (formato padronizado)
 
 ### 6. DOWNLOAD E VISUALIZAÇÃO DE NOTAS
 - **Número clicável**: Após emissão, mostrar número da NFSe como link

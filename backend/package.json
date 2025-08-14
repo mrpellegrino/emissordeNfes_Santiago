@@ -22,18 +22,21 @@
     "migration:create": "npm run typeorm -- migration:create",
     "migration:generate": "npm run typeorm -- migration:generate -d src/config/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d src/config/data-source.ts",
-    "migration:revert": "npm run typeorm -- migration:revert -d src/config/data-source.ts"
+    "migration:revert": "npm run typeorm -- migration:revert -d src/config/data-source.ts",
+    "seed:admin": "npx ts-node src/seeds/admin-user.seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
+    "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/passport": "^11.0.5",
-    "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-express": "^11.1.6",
     "@nestjs/typeorm": "^11.0.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/multer": "^2.0.0",
+    "@types/xlsx": "^0.0.36",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",

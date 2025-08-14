@@ -47,98 +47,46 @@
 
 ## FASE 2: ESTRUTURA BASE DO BACKEND
 
-### 2.1 Configuração do TypeORM e Entidades
-- [ ] Criar entidade Usuario:
-  ```typescript
-  // src/entities/usuario.entity.ts
-  - id (UUID, PK)
-  - nome (string)
-  - email (string, unique)
-  - senha (string, hashed)
-  - perfil (enum: 'admin' | 'operador')
-  - ativo (boolean)
-  - createdAt, updatedAt
+### 2.1 Configuração do TypeORM e Entidades ✅ CONCLUÍDO
+- [x] Criar entidade Usuario (id, email, nome, senha, tipo, ativo, timestamps)
+- [x] Criar entidade Turma (id, nome, serie, turno, ano, valorMensalidade, ativa, timestamps)  
+- [x] Criar entidade Aluno (id, matricula, nome, dataNascimento, cpf, rg, endereco, telefone, email, ativo, timestamps)
+- [x] Criar entidade ResponsavelFinanceiro (id, nome, cpfCnpj, email, telefone, endereco, cidade, estado, cep, inscricaoEstadual, inscricaoMunicipal, razaoSocial, ativo, timestamps)
+- [x] Criar entidade Mensalidade (id, mes, ano, valor, dataVencimento, dataPagamento, status, observacoes, numeroNfse, dataEmissaoNfse, linkPdfNfse, nfseEmitida, timestamps)
+- [x] Criar entidade FilaEmissao (id, status, provider, tentativas, maxTentativas, ultimoErro, dadosProvider, respostaProvider, dataProcessamento, proximaTentativa, timestamps)
+- [x] Configurar relacionamentos entre entidades com Foreign Keys
+- [x] Gerar e executar migração no banco PostgreSQL
+- [x] Testar conexão e inicialização do servidor
   ```
 
-- [ ] Criar entidade Turma:
-  ```typescript
-  // src/entities/turma.entity.ts
-  - id (UUID, PK)
-  - nome (string)
-  - ano (number)
-  - ativa (boolean)
-  - createdAt, updatedAt
-  ```
 
-- [ ] Criar entidade ResponsavelFinanceiro:
-  ```typescript
-  // src/entities/responsavel-financeiro.entity.ts
-  - id (UUID, PK)
-  - nome (string)
-  - cpfCnpj (string)
-  - endereco (string)
-  - telefone (string)
-  - email (string)
-  - createdAt, updatedAt
-  ```
+### 2.2 Módulos e Serviços Base ✅ CONCLUÍDO
+- [x] Criar módulo de autenticação (AuthModule)
+- [x] AuthController com endpoints de login, profile e validate-token
+- [x] AuthService com validação de credenciais e geração JWT
+- [x] JwtStrategy para validação de tokens
+- [x] JwtAuthGuard para proteção de rotas
+- [x] RolesGuard para controle de permissões (admin/operador)
+- [x] Decorators @Roles e @GetUser para facilitar uso
+- [x] DTOs para LoginDto e AuthResponseDto
+- [x] Configuração de CORS e validação global
+- [x] Testes funcionais da API de autenticação
 
-- [ ] Criar entidade Aluno:
-  ```typescript
-  // src/entities/aluno.entity.ts
-  - id (UUID, PK)
-  - nome (string)
-  - turmaId (UUID, FK)
-  - responsavelId (UUID, FK)
-  - ativo (boolean)
-  - createdAt, updatedAt
-  ```
+- [x] Criar módulo de usuários (UsuariosModule) ✅ CONCLUÍDO
+- [x] UsuariosController (CRUD completo, apenas admin)
+- [x] UsuariosService com validações de negócio
+- [x] CreateUsuarioDto, UpdateUsuarioDto, UsuarioResponseDto
+- [x] Proteção por roles (apenas admins podem acessar)
+- [x] Validações de email único e proteção do último admin
+- [x] Endpoint de ativar/desativar usuário
+- [x] Hash automático de senhas com bcryptjs
 
-- [ ] Criar entidade Mensalidade:
-  ```typescript
-  // src/entities/mensalidade.entity.ts
-  - id (UUID, PK)
-  - alunoId (UUID, FK)
-  - mes (number 1-12)
-  - ano (number)
-  - valor (decimal)
-  - statusPagamento (enum: 'nao_pago' | 'pago' | 'nota_emitida' | 'erro_emissao')
-  - numeroNfse (string, nullable)
-  - dataEmissao (date, nullable)
-  - dataPagamento (date, nullable)
-  - createdAt, updatedAt
-  ```
-
-- [ ] Criar entidade FilaEmissao:
-  ```typescript
-  // src/entities/fila-emissao.entity.ts
-  - id (UUID, PK)
-  - mensalidadeId (UUID, FK)
-  - tentativas (number, default: 0)
-  - ultimaExecucao (date, nullable)
-  - erro (text, nullable)
-  - processada (boolean, default: false)
-  - createdAt, updatedAt
-  ```
-
-### 2.2 Módulos e Serviços Base
-- [ ] Criar módulo de autenticação (AuthModule)
-  - AuthController
-  - AuthService (login, validação JWT)
-  - JwtStrategy
-  - AuthGuard
-  - RolesGuard (para admin/operador)
-
-- [ ] Criar módulo de usuários (UsuariosModule)
-  - UsuariosController (CRUD, apenas admin)
-  - UsuariosService
-  - CreateUsuarioDto, UpdateUsuarioDto
-
-- [ ] Criar módulo de turmas (TurmasModule)
+- [x] Criar módulo de turmas (TurmasModule) ✅ CONCLUÍDO
   - TurmasController
   - TurmasService
   - CreateTurmaDto, UpdateTurmaDto
 
-- [ ] Criar módulo de alunos (AlunosModule)
+- [x] Criar módulo de alunos (AlunosModule) ✅ CONCLUÍDO
   - AlunosController
   - AlunosService
   - CreateAlunoDto, UpdateAlunoDto, ImportAlunosDto
@@ -150,12 +98,12 @@
 
 ## FASE 3: FUNCIONALIDADES CORE DO BACKEND
 
-### 3.1 Sistema de Autenticação
-- [ ] Implementar endpoint POST /auth/login
-- [ ] Implementar hash de senhas com bcryptjs
-- [ ] Implementar geração e validação de JWT
-- [ ] Criar decoradores para proteção de rotas
-- [ ] Implementar middleware de autorização por perfil
+### 3.1 Sistema de Autenticação ✅ CONCLUÍDO
+- [x] Implementar endpoint POST /auth/login
+- [x] Implementar hash de senhas com bcryptjs
+- [x] Implementar geração e validação de JWT
+- [x] Criar decoradores para proteção de rotas
+- [x] Implementar middleware de autorização por perfil
 
 ### 3.2 CRUD Básico de Entidades
 - [ ] Implementar CRUD completo de Usuários (apenas admin)
@@ -181,15 +129,57 @@
 - [ ] Criar endpoint PATCH /mensalidades/:id/marcar-pago
 - [ ] Implementar lógica para adicionar à fila de emissão automaticamente
 
-## FASE 4: INTEGRAÇÃO COM BLING API
+## FASE 4: INTEGRAÇÃO COM PROVEDORES DE NFSE (ARQUITETURA DESACOPLADA)
 
-### 4.1 Serviço de Integração Bling
-- [ ] Criar BlingModule e BlingService
+### 4.1 Interface e Abstrações Base
+- [ ] Criar interface NFSeProvider:
+  ```typescript
+  interface NFSeProvider {
+    criarContato(dados: ContatoDto): Promise<ContatoResponse>;
+    obterContato(cpfCnpj: string): Promise<ContatoResponse | null>;
+    emitirNFSe(dados: NFSeDto): Promise<NFSeResponse>;
+    consultarStatus(numeroNfse: string): Promise<StatusResponse>;
+    obterPDF(numeroNfse: string): Promise<Buffer>;
+    cancelarNFSe(numeroNfse: string): Promise<CancelamentoResponse>;
+  }
+  ```
+
+- [ ] Criar DTOs padronizados:
+  ```typescript
+  // ContatoDto, NFSeDto, NFSeResponse, etc.
+  // Formato comum independente do provider
+  ```
+
+- [ ] Criar NFSeService principal:
+  ```typescript
+  // Serviço que usa o provider ativo
+  // Implementa retry, logs e fallback
+  ```
+
+### 4.2 Implementação do BlingProvider
+- [ ] Criar BlingProvider implementando NFSeProvider
 - [ ] Implementar autenticação com API Bling
-- [ ] Criar método para criar/obter contatos no Bling
-- [ ] Criar método para emitir NFSe
-- [ ] Criar método para obter PDF da nota
-- [ ] Implementar tratamento de erros da API
+- [ ] Mapear dados padronizados para formato Bling
+- [ ] Implementar tratamento de erros específicos do Bling
+- [ ] Testes unitários do BlingProvider
+
+### 4.3 Preparação para PrefeituraProvider
+- [ ] Criar PrefeituraProvider (implementação inicial/mock)
+- [ ] Estrutura para diferentes APIs municipais
+- [ ] Sistema de configuração por município
+- [ ] Documentação para implementação futura
+
+### 4.4 Sistema de Configuração de Providers
+- [ ] Configuração via environment (NFSE_PROVIDER=bling|prefeitura)
+- [ ] Interface admin para trocar provider
+- [ ] Validação de configurações por provider
+- [ ] Sistema de fallback entre providers
+
+### 4.5 NFSeService Unificado
+- [ ] Factory pattern para instanciar providers
+- [ ] Logs unificados independente do provider
+- [ ] Retry automático com diferentes providers
+- [ ] Cache de configurações por provider
 
 ### 4.2 Processamento da Fila de Emissão
 - [ ] Criar FilaEmissaoModule e FilaEmissaoService

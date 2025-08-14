@@ -1,27 +1,28 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { createTypeOrmConfig } from './config/data-source';
+import { AuthModule } from './auth/auth.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { TurmasModule } from './turmas/turmas.module';
+import { AlunosModule } from './alunos/alunos.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DATABASE_HOST || 'localhost',
-      port: parseInt(process.env.DATABASE_PORT || '5432', 10),
-      username: process.env.DATABASE_USERNAME || 'postgres',
-      password: process.env.DATABASE_PASSWORD || 'senha',
-      database: process.env.DATABASE_NAME || 'nfse_sistema',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      migrations: [__dirname + '/migrations/*{.ts,.js}'],
-      autoLoadEntities: true,
-      synchronize: process.env.NODE_ENV === 'development', // true apenas em desenvolvimento
-      logging: process.env.NODE_ENV === 'development',
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => createTypeOrmConfig(configService),
+      inject: [ConfigService],
     }),
+    AuthModule,
+    UsuariosModule,
+    TurmasModule,
+    AlunosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
