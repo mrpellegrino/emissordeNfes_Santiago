@@ -18,6 +18,30 @@ export class AlunosService {
     private responsavelRepository: Repository<ResponsavelFinanceiro>,
   ) {}
 
+  /**
+   * Calcula automaticamente percentual e valor de desconto baseado na comparação
+   * entre valor customizado e valor da turma
+   */
+  private calculateDiscounts(valorTurma: number, valorCustomizado?: number): {
+    percentualDesconto: number;
+    valorDesconto: number;
+  } {
+    if (!valorCustomizado || valorCustomizado >= valorTurma) {
+      return {
+        percentualDesconto: 0,
+        valorDesconto: 0
+      };
+    }
+
+    const valorDesconto = valorTurma - valorCustomizado;
+    const percentualDesconto = (valorDesconto / valorTurma) * 100;
+
+    return {
+      percentualDesconto: Math.round(percentualDesconto * 100) / 100, // 2 casas decimais
+      valorDesconto: Math.round(valorDesconto * 100) / 100 // 2 casas decimais
+    };
+  }
+
   async create(createAlunoDto: CreateAlunoDto): Promise<Aluno> {
     // Verificar se a turma existe
     const turma = await this.turmaRepository.findOne({
@@ -43,9 +67,15 @@ export class AlunosService {
       throw new ConflictException('Matrícula já existe');
     }
 
+    // Calcular descontos automaticamente
+    const valorTurma = Number(turma.valorMensalidade);
+    const descontos = this.calculateDiscounts(valorTurma, createAlunoDto.valorMensalidadeCustomizado);
+
     // Criar o aluno
     const aluno = this.alunoRepository.create({
       ...createAlunoDto,
+      percentualDesconto: descontos.percentualDesconto,
+      valorDesconto: descontos.valorDesconto,
       turma,
       responsavelFinanceiro: responsavel,
     });
@@ -117,8 +147,20 @@ export class AlunosService {
       }
     }
 
+    // Recalcular descontos se valor customizado ou turma mudaram
+    const valorTurmaAtual = Number(aluno.turma.valorMensalidade);
+    const novoValorCustomizado = updateAlunoDto.valorMensalidadeCustomizado !== undefined 
+      ? updateAlunoDto.valorMensalidadeCustomizado 
+      : aluno.valorMensalidadeCustomizado;
+    
+    const descontos = this.calculateDiscounts(valorTurmaAtual, novoValorCustomizado);
+
     // Atualizar os campos
     Object.assign(aluno, updateAlunoDto);
+    
+    // Sempre recalcular os descontos
+    aluno.percentualDesconto = descontos.percentualDesconto;
+    aluno.valorDesconto = descontos.valorDesconto;
 
     return this.alunoRepository.save(aluno);
   }
@@ -206,23 +248,26 @@ export class AlunosService {
   async updateMensalidade(id: number, updateMensalidadeDto: UpdateMensalidadeAlunoDto): Promise<Aluno> {
     const aluno = await this.findOne(id);
 
-    // Validar os valores
-    if (updateMensalidadeDto.percentualDesconto !== undefined) {
-      if (updateMensalidadeDto.percentualDesconto < 0 || updateMensalidadeDto.percentualDesconto > 100) {
-        throw new BadRequestException('Percentual de desconto deve estar entre 0 e 100');
-      }
-    }
-
-    if (updateMensalidadeDto.valorDesconto !== undefined && updateMensalidadeDto.valorDesconto < 0) {
-      throw new BadRequestException('Valor de desconto não pode ser negativo');
-    }
-
+    // Validar o valor customizado
     if (updateMensalidadeDto.valorMensalidadeCustomizado !== undefined && updateMensalidadeDto.valorMensalidadeCustomizado < 0) {
       throw new BadRequestException('Valor da mensalidade customizada não pode ser negativo');
     }
 
+    // Determinar o novo valor customizado
+    const novoValorCustomizado = updateMensalidadeDto.valorMensalidadeCustomizado !== undefined 
+      ? updateMensalidadeDto.valorMensalidadeCustomizado 
+      : aluno.valorMensalidadeCustomizado;
+
+    // Calcular descontos automaticamente
+    const valorTurma = Number(aluno.turma.valorMensalidade);
+    const descontos = this.calculateDiscounts(valorTurma, novoValorCustomizado);
+
     // Atualizar os campos
     Object.assign(aluno, updateMensalidadeDto);
+    
+    // Sempre recalcular os descontos
+    aluno.percentualDesconto = descontos.percentualDesconto;
+    aluno.valorDesconto = descontos.valorDesconto;
 
     return this.alunoRepository.save(aluno);
   }

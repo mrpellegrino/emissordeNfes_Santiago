@@ -50,18 +50,7 @@ export class CreateAlunoDto {
   @IsNumber()
   @IsOptional()
   @Min(0)
-  valorMensalidadeCustomizado?: number;
-
-  @IsNumber()
-  @IsOptional()
-  @Min(0)
-  @Max(100)
-  percentualDesconto?: number;
-
-  @IsNumber()
-  @IsOptional()
-  @Min(0)
-  valorDesconto?: number;
+  valorMensalidadeCustomizado?: number; // Se não enviado, herda o valor da turma. Se enviado, os descontos são calculados automaticamente
 
   @IsString()
   @IsOptional()

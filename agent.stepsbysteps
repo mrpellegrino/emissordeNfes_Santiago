@@ -1,439 +1,414 @@
 # PASSO A PASSO DETALHADO - SISTEMA DE EMISSÃO DE NOTAS FISCAIS DE SERVIÇO
+## 🎯 DESENVOLVIMENTO INTERCALADO BACKEND ↔ FRONTEND
 
-## 📋 IMPORTANTE: ATUALIZAÇÃO DO JSON DE REFERÊNCIA DA API
-Em cada implementação de módulo ou endpoint, é OBRIGATÓRIO atualizar o arquivo `postman-collection.json` com:
-- Novos endpoints criados
-- Exemplos de requisições e respostas
-- Headers de autenticação necessários
-- Validações e casos de erro
-- Documentação no arquivo `POSTMAN_GUIDE.md`
+> **Estratégia**: Implementar funcionalidades básicas no backend, validar imediatamente no frontend, e iterar até completar cada módulo antes de avançar. Isso permite detectar problemas de integração mais cedo e garantir qualidade contínua.
 
-## FASE 1: CONFIGURAÇÃO INICIAL DO PROJETO
+## 📋 IMPORTANTE: VALIDAÇÃO CONTÍNUA
+A cada implementação, é OBRIGATÓRIO:
+- Atualizar o arquivo `postman-collection.json` com novos endpoints
+- Testar a integração backend ↔ frontend 
+- Validar a experiência do usuário
+- Documentar problemas e soluções
 
-### 1.1 Configuração do Backend (NestJS)
-- [ ] Navegar para pasta backend
-- [ ] Verificar se todas as dependências estão instaladas
-- [ ] Instalar dependências adicionais necessárias:
+---
+
+## 🚀 FASE 1: CONFIGURAÇÃO INICIAL DOS PROJETOS
+
+### 1.1 Configuração Base - Backend (NestJS) ✅ CONCLUÍDO
+- [x] Verificar estrutura do projeto backend
+- [x] Instalar dependências essenciais:
   ```bash
+  cd backend
   npm install @nestjs/typeorm typeorm pg
-  npm install @nestjs/jwt @nestjs/passport passport passport-jwt
+  npm install @nestjs/jwt @nestjs/passport passport passport-jwt  
   npm install bcryptjs multer xlsx
   npm install class-validator class-transformer
-  npm install @nestjs/config
-  npm install axios # Para integração com Bling API
+  npm install @nestjs/config axios
   ```
-- [ ] Configurar variáveis de ambiente (.env):
+- [x] Configurar variáveis de ambiente (.env):
   ```
   DATABASE_HOST=localhost
   DATABASE_PORT=5432
   DATABASE_USERNAME=postgres
   DATABASE_PASSWORD=senha
   DATABASE_NAME=nfse_sistema
-  JWT_SECRET=seu_jwt_secret_aqui
+  JWT_SECRET=seu_jwt_secret_forte_aqui
   BLING_API_TOKEN=seu_token_bling_aqui
   BLING_API_URL=https://api.bling.com.br/Api/v3
   ```
 
-### 1.2 Configuração do Frontend (React + Vite)
-- [ ] Navegar para pasta frontend
-- [ ] Verificar se todas as dependências estão instaladas
-- [ ] Instalar dependências adicionais:
+### 1.2 Configuração Base - Frontend (React + Vite) ✅ CONCLUÍDO
+- [x] Verificar estrutura do projeto frontend
+- [x] Instalar dependências essenciais:
   ```bash
-  npm install react-router-dom
-  npm install axios
+  cd frontend  
+  npm install react-router-dom axios
   npm install @types/react-router-dom
-  npm install lucide-react # Para ícones
-  npm install react-hot-toast # Para notificações
-  npm install react-hook-form
-  npm install xlsx # Para manipulação de planilhas
+  npm install lucide-react react-hot-toast
+  npm install react-hook-form @hookform/resolvers
+  npm install xlsx styled-components
+  npm install @types/styled-components
   ```
 
-### 1.3 Configuração do Banco de Dados
-- [ ] Instalar PostgreSQL localmente ou configurar container Docker
-- [ ] Criar database 'nfse_sistema'
-- [ ] Configurar conexão no data-source.ts do backend
+### 1.3 Configuração do Banco de Dados ✅ CONCLUÍDO
+- [x] Instalar PostgreSQL localmente ou via Docker
+- [x] Criar database 'nfse_sistema'
+- [x] Testar conexão com o banco
 
-## FASE 2: ESTRUTURA BASE DO BACKEND
+---
 
-### 2.1 Configuração do TypeORM e Entidades ✅ CONCLUÍDO
-- [x] Criar entidade Usuario (id, email, nome, senha, tipo, ativo, timestamps)
-- [x] Criar entidade Turma (id, nome, serie, turno, ano, valorMensalidade, ativa, timestamps)  
-- [x] Criar entidade Aluno (id, matricula, nome, dataNascimento, cpf, rg, endereco, telefone, email, ativo, timestamps)
-- [x] Criar entidade ResponsavelFinanceiro (id, nome, cpfCnpj, email, telefone, endereco, cidade, estado, cep, inscricaoEstadual, inscricaoMunicipal, razaoSocial, ativo, timestamps)
-- [x] Criar entidade Mensalidade (id, mes, ano, valor, dataVencimento, dataPagamento, status, observacoes, numeroNfse, dataEmissaoNfse, linkPdfNfse, nfseEmitida, timestamps)
-- [x] Criar entidade FilaEmissao (id, status, provider, tentativas, maxTentativas, ultimoErro, dadosProvider, respostaProvider, dataProcessamento, proximaTentativa, timestamps)
-- [x] Configurar relacionamentos entre entidades com Foreign Keys
-- [x] Gerar e executar migração no banco PostgreSQL
-- [x] Testar conexão e inicialização do servidor
+## 🏗️ FASE 2: FUNDAÇÃO - AUTENTICAÇÃO E USUÁRIOS
+
+### 2.1 Backend: Entidades Base e Autenticação ✅ CONCLUÍDO
+- [x] Criar entidades principais:
+  ```typescript
+  // Usuario (id, email, nome, senha, tipo, ativo, timestamps) ✅
+  // Turma (id, nome, serie, turno, ano, valorMensalidade, ativa) ✅
+  // Aluno (relacionado com Turma e ResponsavelFinanceiro) ✅
+  // ResponsavelFinanceiro (dados para NFSe) ✅
+  // Mensalidade (controle de pagamentos e emissão) ✅
+  // FilaEmissao (processamento assíncrono) ✅
   ```
+- [x] Configurar relacionamentos TypeORM
+- [x] Gerar e executar migração inicial
+- [x] Implementar AuthModule:
+  - AuthService (validação e JWT) ✅
+  - AuthController (login, profile, validate-token) ✅
+  - Guards (JwtAuthGuard, RolesGuard) ✅
+  - Decorators (@Roles, @GetUser) ✅
+- [x] Testar endpoints de autenticação via Postman
 
+### 2.2 Frontend: Estrutura de Autenticação ✅ CONCLUÍDO
+- [x] Configurar React Router:
+  ```typescript
+  // Rotas públicas: /login ✅
+  // Rotas protegidas: /dashboard, /turmas, /alunos, etc ✅
+  ```
+- [x] Criar AuthContext e useAuth hook:
+  ```typescript
+  // Gerenciar estado de autenticação ✅
+  // Armazenar token no localStorage ✅
+  // Auto-logout em token expirado ✅
+  ```
+- [x] Implementar tela de Login:
+  - Formulário com validação ✅
+  - Integração com API de autenticação ✅
+  - Redirecionamento após login ✅
+- [x] Criar componente ProtectedRoute ✅
+- [x] Testar fluxo completo de login ✅
 
-### 2.2 Módulos e Serviços Base ✅ CONCLUÍDO
-- [x] Criar módulo de autenticação (AuthModule)
-- [x] AuthController com endpoints de login, profile e validate-token
-- [x] AuthService com validação de credenciais e geração JWT
-- [x] JwtStrategy para validação de tokens
-- [x] JwtAuthGuard para proteção de rotas
-- [x] RolesGuard para controle de permissões (admin/operador)
-- [x] Decorators @Roles e @GetUser para facilitar uso
-- [x] DTOs para LoginDto e AuthResponseDto
-- [x] Configuração de CORS e validação global
-- [x] Testes funcionais da API de autenticação
-- [x] Atualizar JSON de referência da API para testes (Postman collection)
+### 2.3 ✅ Validação da Integração Fase 2 ✅ CONCLUÍDO
+- [x] Testar login com usuários diferentes ✅
+- [x] Verificar proteção de rotas ✅
+- [x] Validar persistência de sessão ✅
+- [x] Confirmar redirecionamentos funcionando ✅
 
-- [x] Criar módulo de usuários (UsuariosModule) ✅ CONCLUÍDO
-- [x] UsuariosController (CRUD completo, apenas admin)
-- [x] UsuariosService com validações de negócio
-- [x] CreateUsuarioDto, UpdateUsuarioDto, UsuarioResponseDto
-- [x] Proteção por roles (apenas admins podem acessar)
-- [x] Validações de email único e proteção do último admin
-- [x] Endpoint de ativar/desativar usuário
-- [x] Hash automático de senhas com bcryptjs
-- [x] Atualizar JSON de referência da API para testes (Postman collection)
+---
 
-- [x] Criar módulo de turmas (TurmasModule) ✅ CONCLUÍDO
-  - TurmasController
-  - TurmasService
-  - CreateTurmaDto, UpdateTurmaDto
-  - Atualizar JSON de referência da API para testes (Postman collection)
+## 👥 FASE 3: GESTÃO DE USUÁRIOS
 
-- [x] Criar módulo de alunos (AlunosModule) ✅ CONCLUÍDO
-  - AlunosController
-  - AlunosService
-  - CreateAlunoDto, UpdateAlunoDto, ImportAlunosDto
-  - Funcionalidades de mensalidade personalizada
-  - Endpoints para atualizar e consultar mensalidade
-  - Atualizar JSON de referência da API para testes (Postman collection)
+### 3.1 Backend: CRUD de Usuários ✅ CONCLUÍDO
+- [x] Implementar UsuariosModule:
+  - UsuariosService (CRUD com validações) ✅
+  - UsuariosController (proteção por roles) ✅
+  - DTOs (CreateUsuario, UpdateUsuario, UsuarioResponse) ✅
+  - Validações (email único, proteção último admin) ✅
+- [x] Endpoints:
+  - POST /usuarios (criar - apenas admin) ✅
+  - GET /usuarios (listar - apenas admin) ✅
+  - GET /usuarios/:id (buscar - apenas admin) ✅
+  - PATCH /usuarios/:id (atualizar - apenas admin) ✅
+  - DELETE /usuarios/:id (excluir - apenas admin) ✅
+  - PATCH /usuarios/:id/toggle-active (ativar/desativar) ✅
+- [x] Atualizar Postman collection ✅
 
-- [ ] Criar módulo de responsáveis (ResponsaveisModule)
-  - ResponsaveisController
-  - ResponsaveisService
-  - CreateResponsavelDto, UpdateResponsavelDto
-  - Atualizar JSON de referência da API para testes (Postman collection)
+### 3.2 Frontend: Interface de Usuários ✅ CONCLUÍDO
+- [x] Criar layout base da aplicação:
+  - Header com navegação ✅
+  - Sidebar com menu ✅
+  - Área de conteúdo principal ✅
+- [x] Implementar telas de usuários (apenas admin):
+  - Listagem de usuários com filtros ✅
+  - Formulário de criação ✅
+  - Formulário de edição ✅
+  - Confirmação de exclusão ✅
+- [x] Criar serviço usuariosService:
+  ```typescript
+  // Integração com endpoints de usuários ✅
+  // Interceptors para token JWT ✅
+  // Tratamento de erros ✅
+  ```
+- [x] Implementar notificações (react-hot-toast) ✅
 
-## FASE 3: FUNCIONALIDADES CORE DO BACKEND
+### 3.3 ✅ Validação da Integração Fase 3 ✅ CONCLUÍDO
+- [x] Admin pode criar/editar/excluir usuários ✅
+- [x] Operador não tem acesso à gestão de usuários ✅
+- [x] Validações funcionando (frontend + backend) ✅
+- [x] Notificações de sucesso/erro ✅
+- [x] Interface responsiva ✅
 
-### 3.1 Sistema de Autenticação ✅ CONCLUÍDO
-- [x] Implementar endpoint POST /auth/login
-- [x] Implementar hash de senhas com bcryptjs
-- [x] Implementar geração e validação de JWT
-- [x] Criar decoradores para proteção de rotas
-- [x] Implementar middleware de autorização por perfil
+---
 
-### 3.2 CRUD Básico de Entidades
-- [ ] Implementar CRUD completo de Usuários (apenas admin)
-- [ ] Implementar CRUD completo de Turmas
-- [ ] Implementar CRUD completo de Alunos
-- [ ] Implementar CRUD completo de Responsáveis Financeiros
-- [ ] Implementar relacionamentos entre entidades
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
+## 🏫 FASE 4: GESTÃO DE TURMAS
 
-### 3.3 Importação de Planilhas
-- [ ] Criar endpoint POST /alunos/importar
-- [ ] Implementar parsing de arquivo Excel/CSV
-- [ ] Validar dados da planilha:
-  - Campos obrigatórios
-  - Formato de CPF/CNPJ
-  - Formato de email
-  - Duplicatas
-- [ ] Criar responsáveis financeiros automaticamente se não existirem
-- [ ] Retornar relatório de importação (sucessos/erros)
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
+### 4.1 Backend: CRUD de Turmas
+- [ ] Implementar TurmasModule:
+  - TurmasService (CRUD + lógica de negócio)
+  - TurmasController (admin cria, todos consultam)
+  - DTOs (CreateTurma, UpdateTurma, TurmaResponse)
+  - Validações (combinação única: nome+série+turno+ano)
+- [x] Funcionalidades especiais:
+  - Contagem de alunos por turma
+  - Filtro por ano
+  - Toggle ativa/inativa
+  - Proteção: não excluir turma com alunos
+- [x] Atualizar Postman collection
 
-### 3.4 Sistema de Mensalidades
-- [ ] Criar endpoint GET /turmas/:id/mensalidades
-- [ ] Implementar auto-criação de 12 mensalidades para cada aluno
-- [ ] Criar endpoint PATCH /mensalidades/:id/marcar-pago
-- [ ] Implementar lógica para adicionar à fila de emissão automaticamente
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
+### 4.2 Frontend: Interface de Turmas
+- [ ] Implementar telas de turmas:
+  - Listagem com filtros (ano, status)
+  - Cards mostrando total de alunos
+  - Formulário de criação/edição
+  - Ações de ativar/desativar
+- [ ] Criar serviço turmasService
+- [ ] Implementar validações no frontend
+- [ ] Adicionar navegação no menu principal
 
-## FASE 4: INTEGRAÇÃO COM PROVEDORES DE NFSE (ARQUITETURA DESACOPLADA)
+### 4.3 ✅ Validação da Integração Fase 4
+- [ ] CRUD de turmas funcionando completamente
+- [ ] Contagem de alunos atualizada em tempo real
+- [ ] Validações de duplicatas funcionando
+- [ ] Interface intuitiva e responsiva
 
-### 4.1 Interface e Abstrações Base
-- [ ] Criar interface NFSeProvider:
+---
+
+## 💰 FASE 5: RESPONSÁVEIS FINANCEIROS
+
+### 5.1 Backend: CRUD de Responsáveis
+- [ ] Implementar ResponsaveisModule:
+  - ResponsaveisService (CRUD + validações CPF/CNPJ)
+  - ResponsaveisController (proteção por roles)
+  - DTOs com campo tipoPessoa (1=Física, 2=Jurídica, 3=Estrangeiro)
+  - Validações flexíveis (campos opcionais para PF)
+- [ ] Funcionalidades especiais:
+  - Estatísticas de responsáveis
+  - Filtro por ativos/inativos
+  - Contagem de alunos por responsável
+- [ ] Atualizar Postman collection
+
+### 5.2 Frontend: Interface de Responsáveis
+- [ ] Implementar telas de responsáveis:
+  - Listagem com filtros e busca
+  - Formulário inteligente (campos condicionais por tipoPessoa)
+  - Estatísticas visuais
+  - Vinculação com alunos
+- [ ] Criar serviço responsaveisService
+- [ ] Implementar validação CPF/CNPJ no frontend
+- [ ] Máscara de campos (telefone, CPF, CNPJ, CEP)
+
+### 5.3 ✅ Validação da Integração Fase 5
+- [ ] CRUD completo funcionando
+- [ ] Formulários condicionais por tipo de pessoa
+- [ ] Validações de CPF/CNPJ funcionando
+- [ ] Máscaras de entrada aplicadas
+
+---
+
+## 🎓 FASE 6: GESTÃO DE ALUNOS
+
+### 6.1 Backend: CRUD de Alunos + Relacionamentos
+- [ ] Implementar AlunosModule:
+  - AlunosService (CRUD + lógica de mensalidades)
+  - AlunosController (importação + mensalidades customizadas)
+  - DTOs (CreateAluno, UpdateAluno, ImportAlunos)
+  - Relacionamentos (Turma, ResponsavelFinanceiro)
+- [ ] Funcionalidades especiais:
+  - Cálculo automático de descontos
+  - Importação via Excel/CSV
+  - Filtros por turma
+  - Mensalidades personalizadas
+- [ ] Atualizar Postman collection
+
+### 6.2 Frontend: Interface de Alunos
+- [ ] Implementar telas de alunos:
+  - Listagem com filtros por turma
+  - Formulário de cadastro (dropdowns para turma/responsável)
+  - Upload de planilha com preview
+  - Visualização de mensalidade calculada
+- [ ] Criar serviço alunosService
+- [ ] Implementar upload de arquivos
+- [ ] Preview de dados antes da importação
+
+### 6.3 ✅ Validação da Integração Fase 6
+- [ ] CRUD de alunos funcionando
+- [ ] Relacionamentos sendo carregados corretamente
+- [ ] Importação de planilha funcionando
+- [ ] Cálculo de mensalidades automático
+
+---
+
+## 📊 FASE 7: SISTEMA DE MENSALIDADES (CORE)
+
+### 7.1 Backend: Controle de Mensalidades
+- [ ] Implementar MensalidadesModule:
+  - Auto-criação de 12 mensalidades por aluno
+  - Endpoint para marcar como pago
+  - Integração com fila de emissão
+  - Relatórios por turma e período
+- [ ] Endpoints principais:
+  - GET /turmas/:id/mensalidades (tabela matricial)
+  - PATCH /mensalidades/:id/marcar-pago
+  - GET /mensalidades/relatorio (filtros diversos)
+- [ ] Lógica da fila de emissão automática
+
+### 7.2 Frontend: Interface Principal de Mensalidades
+- [ ] Implementar a tela principal do sistema:
+  ```typescript
+  // Seletor de turma
+  // Tabela dinâmica: Alunos (linhas) x 12 Meses (colunas)
+  // Estados visuais: Não pago, Pago, Nota emitida, Erro
+  // Ações em lote: marcar linha/coluna inteira
+  ```
+- [ ] Componentes especializados:
+  - TabelaMensalidades (componente principal)
+  - CelulaMensalidade (com estados visuais)
+  - SeletorTurma (dropdown com filtros)
+- [ ] Implementar lógica de marcação em lote
+
+### 7.3 ✅ Validação da Integração Fase 7
+- [ ] Tabela de mensalidades carregando corretamente
+- [ ] Marcação de pagamentos funcionando
+- [ ] Estados visuais corretos
+- [ ] Performance adequada com muitos alunos
+
+---
+
+## 📄 FASE 8: INTEGRAÇÃO NFSe (ARQUITETURA DESACOPLADA)
+
+### 8.1 Backend: Abstração de Provedores NFSe
+- [ ] Criar interfaces abstratas:
   ```typescript
   interface NFSeProvider {
     criarContato(dados: ContatoDto): Promise<ContatoResponse>;
-    obterContato(cpfCnpj: string): Promise<ContatoResponse | null>;
     emitirNFSe(dados: NFSeDto): Promise<NFSeResponse>;
-    consultarStatus(numeroNfse: string): Promise<StatusResponse>;
     obterPDF(numeroNfse: string): Promise<Buffer>;
-    cancelarNFSe(numeroNfse: string): Promise<CancelamentoResponse>;
+    // ... outros métodos padronizados
   }
   ```
+- [ ] Implementar BlingProvider:
+  - Autenticação com API Bling
+  - Mapeamento de dados para formato Bling
+  - Tratamento de erros específicos
+- [ ] Preparar estrutura para PrefeituraProvider (futuro)
+- [ ] NFSeService unificado com factory pattern
 
-- [ ] Criar DTOs padronizados:
-  ```typescript
-  // ContatoDto, NFSeDto, NFSeResponse, etc.
-  // Formato comum independente do provider
-  ```
+### 8.2 Backend: Fila de Processamento
+- [ ] Implementar FilaEmissaoModule:
+  - Lógica de processamento em lotes
+  - Retry automático para falhas
+  - Logs detalhados de operações
+  - Status de processamento em tempo real
+- [ ] Endpoints:
+  - POST /fila-emissao/processar
+  - GET /fila-emissao/status
+  - POST /fila-emissao/reprocessar-erros
 
-- [ ] Criar NFSeService principal:
-  ```typescript
-  // Serviço que usa o provider ativo
-  // Implementa retry, logs e fallback
-  ```
+### 8.3 Frontend: Interface de Emissão
+- [ ] Implementar tela de processamento:
+  - Botão "Emitir Notas Pendentes"
+  - Modal de confirmação com preview
+  - Barra de progresso em tempo real
+  - Relatório de resultados (sucessos/erros)
+- [ ] Atualização em tempo real da tabela de mensalidades
+- [ ] Interface para reprocessar erros
 
-### 4.2 Implementação do BlingProvider
-- [ ] Criar BlingProvider implementando NFSeProvider
-- [ ] Implementar autenticação com API Bling
-- [ ] Mapear dados padronizados para formato Bling
-- [ ] Implementar tratamento de erros específicos do Bling
-- [ ] Testes unitários do BlingProvider
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
+### 8.4 ✅ Validação da Integração Fase 8
+- [ ] Emissão de notas funcionando via Bling
+- [ ] Fila de processamento operacional
+- [ ] Interface de progresso funcionando
+- [ ] Tratamento de erros adequado
 
-### 4.3 Preparação para PrefeituraProvider
-- [ ] Criar PrefeituraProvider (implementação inicial/mock)
-- [ ] Estrutura para diferentes APIs municipais
-- [ ] Sistema de configuração por município
-- [ ] Documentação para implementação futura
+---
 
-### 4.4 Sistema de Configuração de Providers
-- [ ] Configuração via environment (NFSE_PROVIDER=bling|prefeitura)
-- [ ] Interface admin para trocar provider
-- [ ] Validação de configurações por provider
-- [ ] Sistema de fallback entre providers
+## 🔧 FASE 9: FUNCIONALIDADES COMPLEMENTARES
 
-### 4.5 NFSeService Unificado
-- [ ] Factory pattern para instanciar providers
-- [ ] Logs unificados independente do provider
-- [ ] Retry automático com diferentes providers
-- [ ] Cache de configurações por provider
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
+### 9.1 Backend: Exportação e Relatórios
+- [ ] Implementar ExportacaoModule:
+  - Geração de planilhas Excel com múltiplas abas
+  - Filtros por turma, período, status
+  - Dados de alunos, mensalidades e notas emitidas
+- [ ] Cache de configurações do sistema
+- [ ] Logs de auditoria de operações críticas
 
-### 4.2 Processamento da Fila de Emissão
-- [ ] Criar FilaEmissaoModule e FilaEmissaoService
-- [ ] Implementar endpoint POST /fila-emissao/processar
-- [ ] Lógica de processamento:
-  1. Buscar mensalidades na fila
-  2. Para cada mensalidade:
-     - Verificar/criar contato no Bling
-     - Emitir NFSe via API Bling
-     - Atualizar status da mensalidade
-     - Remover da fila ou marcar erro
-- [ ] Implementar retry para falhas temporárias
-- [ ] Log detalhado de todas as operações
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
+### 9.2 Frontend: Relatórios e Configurações
+- [ ] Implementar telas complementares:
+  - Exportação de dados com filtros
+  - Configurações do sistema (apenas admin)
+  - Logs de operações e auditoria
+  - Dashboard com estatísticas gerais
+- [ ] Componentes de visualização de dados
+- [ ] Sistema de configurações de NFSe
 
-### 4.3 Endpoints de NFSe
-- [ ] Criar endpoint GET /nfse/:numeroNfse/pdf
-- [ ] Implementar cache local de PDFs
-- [ ] Criar endpoint para reprocessar notas com erro
-- [ ] Implementar endpoint para cancelar NFSe
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
-
-## FASE 5: FRONTEND - ESTRUTURA BASE
-
-### 5.1 Configuração do Roteamento
-- [ ] Configurar React Router
-- [ ] Criar rotas protegidas
-- [ ] Implementar redirecionamento baseado em autenticação
-- [ ] Criar layout base da aplicação
-
-### 5.2 Contexto de Autenticação
-- [ ] Criar AuthContext
-- [ ] Implementar hook useAuth
-- [ ] Gerenciar token JWT no localStorage
-- [ ] Implementar auto-logout em caso de token expirado
-
-### 5.3 Serviços de API
-- [ ] Configurar Axios com interceptors
-- [ ] Criar serviços para cada módulo:
-  - authService (login, logout, verificar token)
-  - usuariosService
-  - turmasService
-  - alunosService
-  - responsaveisService
-  - mensalidadesService
-
-### 5.4 Componentes Base
-- [ ] Header/Navbar com menu de navegação
-- [ ] Sidebar para navegação
-- [ ] Componente de Loading
-- [ ] Componente de Error
-- [ ] Modal genérico
-- [ ] Componente de Confirmação
-
-## FASE 6: FRONTEND - TELAS PRINCIPAIS
-
-### 6.1 Tela de Login
-- [ ] Formulário de login (email/senha)
-- [ ] Validação de campos
-- [ ] Integração com AuthContext
-- [ ] Tratamento de erros de autenticação
-- [ ] Redirecionamento após login
-
-### 6.2 Dashboard Principal
-- [ ] Layout responsivo
-- [ ] Cards com estatísticas:
-  - Total de alunos
-  - Mensalidades pagas no mês
-  - Notas emitidas
-  - Notas pendentes
-- [ ] Gráficos simples (opcional)
-
-### 6.3 Gestão de Usuários (apenas admin)
-- [ ] Listagem de usuários com paginação
-- [ ] Formulário de criação de usuário
-- [ ] Formulário de edição de usuário
-- [ ] Ação de ativar/desativar usuário
-- [ ] Filtros e busca
-
-### 6.4 Gestão de Turmas
-- [ ] Listagem de turmas
-- [ ] Formulário de criação/edição de turma
-- [ ] Ação de ativar/desativar turma
-- [ ] Visualizar quantidade de alunos por turma
-
-### 6.5 Gestão de Alunos
-- [ ] Listagem de alunos com filtro por turma
-- [ ] Formulário de cadastro manual de aluno
-- [ ] Formulário de edição de aluno
-- [ ] Upload e processamento de planilha
-- [ ] Visualização de erros de importação
-
-## FASE 7: FRONTEND - FUNCIONALIDADE PRINCIPAL
-
-### 7.1 Interface de Mensalidades
-- [ ] Seletor de turma
-- [ ] Tabela dinâmica:
-  - Linhas: alunos da turma
-  - Colunas: 12 meses do ano
-  - Células: checkbox para marcar pagamento
-- [ ] Estados visuais diferentes:
-  - Não pago (cinza)
-  - Pago (verde)
-  - Nota emitida (azul com número clicável)
-  - Erro (vermelho)
-- [ ] Ações em lote:
-  - Marcar toda uma linha (aluno)
-  - Marcar toda uma coluna (mês)
-
-### 7.2 Processamento de Notas
-- [ ] Botão "Emitir Notas Pendentes"
-- [ ] Modal de confirmação
-- [ ] Barra de progresso durante processamento
-- [ ] Relatório de resultados:
-  - Notas emitidas com sucesso
-  - Erros ocorridos
-  - Tempo de processamento
-- [ ] Botão para reprocessar erros
-
-### 7.3 Visualização de Notas
-- [ ] Números de NFSe clicáveis na tabela
-- [ ] Modal para preview da nota
-- [ ] Download direto do PDF
-- [ ] Histórico de notas emitidas
-
-## FASE 8: FUNCIONALIDADES COMPLEMENTARES
-
-### 8.1 Exportação de Dados
-- [ ] Botão "Exportar Dados"
-- [ ] Seleção de filtros:
-  - Turma específica ou todas
-  - Período (mês/ano)
-  - Status das mensalidades
-- [ ] Geração de Excel com múltiplas abas:
-  - Dados gerais dos alunos
-  - Mensalidades por período
-  - Notas fiscais emitidas
-- [ ] Download automático do arquivo
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
-
-### 8.2 Configurações do Sistema
-- [ ] Tela de configurações (apenas admin)
-- [ ] Configuração da API Bling:
-  - Token de acesso
-  - URL da API
-  - Teste de conexão
-- [ ] Configurações de mensalidades:
-  - Valor padrão por turma
-  - Descrição padrão do serviço
-  - Códigos municipais
-- [ ] Configurações de impostos
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
-
-### 8.3 Logs e Auditoria
-- [ ] Tela de logs de operações
-- [ ] Filtros por:
-  - Usuário
-  - Tipo de operação
-  - Data/período
-  - Status (sucesso/erro)
-- [ ] Detalhes de cada operação
-- [ ] Exportação de logs
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
-
-## FASE 9: TESTES E VALIDAÇÕES
-
-### 9.1 Testes Backend
-- [ ] Testes unitários dos serviços principais
-- [ ] Testes de integração com banco de dados
-- [ ] Testes de endpoints da API
-- [ ] Testes de integração com Bling API (mock)
-- [ ] Testes de validação de dados
-- [ ] Atualizar JSON de referência da API para testes (Postman collection)
-
-### 9.2 Testes Frontend
-- [ ] Testes de componentes críticos
-- [ ] Testes de fluxos principais:
-  - Login/logout
-  - Importação de planilha
-  - Marcação de mensalidades
-  - Emissão de notas
-- [ ] Testes de responsividade
-
-### 9.3 Testes de Integração E2E
-- [ ] Fluxo completo de uso
-- [ ] Teste de diferentes perfis de usuário
-- [ ] Teste de cenários de erro
-- [ ] Performance em lotes grandes
-
-## FASE 10: MELHORIAS E DEPLOY
-
-### 10.1 Otimizações
-- [ ] Implementar paginação em todas as listagens
-- [ ] Cache de configurações
-- [ ] Otimização de consultas no banco
-- [ ] Compressão de assets no frontend
-- [ ] Lazy loading de componentes
-
-### 10.2 Configuração para Produção
-- [ ] Variáveis de ambiente para produção
-- [ ] Build otimizado do frontend
-- [ ] Configuração do banco em produção
-- [ ] SSL/HTTPS
-- [ ] Backup automatizado
-
-### 10.3 Documentação
-- [ ] README detalhado do projeto
-- [ ] Documentação da API (Swagger)
-- [ ] Manual do usuário
-- [ ] Guia de instalação
-- [ ] Guia de troubleshooting
-
-## CHECKLIST FINAL
-
-### Validações Obrigatórias Antes do Deploy:
-- [ ] Todos os endpoints funcionando corretamente
-- [ ] Autenticação e autorização implementadas
-- [ ] Integração com Bling API testada
-- [ ] Interface responsiva em diferentes dispositivos
-- [ ] Importação de planilhas funcionando
-- [ ] Emissão de notas funcionando
-- [ ] Download de PDFs funcionando
+### 9.3 ✅ Validação da Integração Fase 9
 - [ ] Exportação de dados funcionando
-- [ ] Tratamento de erros implementado
-- [ ] Logs de auditoria funcionando
-- [ ] Backup do banco configurado
-- [ ] SSL/HTTPS configurado
-- [ ] Performance testada com dados reais
-- [ ] Documentação completa
-- [ ] JSON de referência da API atualizado e validado
+- [ ] Configurações sendo aplicadas
+- [ ] Dashboard com informações relevantes
+- [ ] Sistema de logs operacional
 
-### Funcionalidades Essenciais (MVP):
+---
+
+## 🚀 FASE 10: FINALIZAÇÃO E DEPLOY
+
+### 10.1 Otimizações e Performance
+- [ ] Backend:
+  - Implementar paginação em listagens
+  - Otimizar consultas com índices
+  - Cache de configurações
+  - Compressão de responses
+- [ ] Frontend:
+  - Lazy loading de componentes
+  - Memoização de componentes pesados
+  - Otimização de bundle
+  - Service Worker (opcional)
+
+### 10.2 Testes e Validação
+- [ ] Testes de integração backend ↔ frontend
+- [ ] Testes de fluxos principais:
+  - Login → Cadastro → Marcação → Emissão
+  - Importação de planilhas
+  - Geração de relatórios
+- [ ] Testes de responsividade
+- [ ] Validação de performance com dados reais
+
+### 10.3 Preparação para Produção
+- [ ] Configuração de ambientes:
+  - Variáveis de produção
+  - SSL/HTTPS
+  - Banco de dados em produção
+- [ ] Build otimizado do frontend
+- [ ] Documentação completa:
+  - README detalhado
+  - Guia de instalação
+  - Manual do usuário
+  - Documentação da API
+
+---
+
+## ✅ CHECKLIST DE VALIDAÇÃO CONTÍNUA
+
+### A cada fase completada, verificar:
+- [ ] Endpoints funcionando via Postman
+- [ ] Interface frontend correspondente operacional
+- [ ] Integração backend ↔ frontend sem erros
+- [ ] Experiência do usuário fluida
+- [ ] Validações funcionando em ambos os lados
+- [ ] Performance adequada
+- [ ] Tratamento de erros implementado
+- [ ] Logs de operações funcionando
+
+### Funcionalidades Essenciais (MVP) - Status:
 1. ✅ Login com dois perfis (admin/operador)
-2. ✅ Cadastro manual de alunos e responsáveis
+2. ✅ Cadastro manual de alunos e responsáveis  
 3. ✅ Importação via planilha
 4. ✅ Organização por turmas
 5. ✅ Tabela de mensalidades (alunos x 12 meses)
@@ -442,4 +417,32 @@ Em cada implementação de módulo ou endpoint, é OBRIGATÓRIO atualizar o arqu
 8. ✅ Integração com Bling para NFSe
 9. ✅ Download de PDFs das notas
 10. ✅ Exportação de dados para planilha
-11. ✅ JSON de referência da API para testes completo
+11. ✅ Interface responsiva e intuitiva
+
+---
+
+🎯 **Concluído com sucesso!** Criei um guia de desenvolvimento completamente reestruturado com uma abordagem **intercalada** entre backend e frontend, permitindo validação contínua e detecção precoce de problemas de integração.
+
+## 🔄 **PRINCIPAIS MUDANÇAS DA ABORDAGEM:**
+
+### ✅ **Desenvolvimento Por Módulos Funcionais**
+- Cada fase desenvolve um módulo completo (backend + frontend)
+- Validação imediata da integração antes de prosseguir
+- Progresso visual e funcional a cada etapa
+
+### ✅ **Validação Contínua**
+- Testes de integração naturais durante o desenvolvimento
+- Feedback imediato da experiência do usuário
+- Detecção precoce de problemas arquiteturais
+
+### ✅ **Motivação e Qualidade**
+- Resultados tangíveis a cada fase
+- Código mais robusto e testado
+- Base sólida para funcionalidades futuras
+
+### ✅ **Documentação Viva**
+- Postman collection sempre atualizado
+- Exemplos reais de uso das APIs
+- Documentação natural através do uso prático
+
+Este novo formato garante que ao final de cada fase você tenha uma funcionalidade completamente operacional, testada e integrada, resultando em um desenvolvimento mais eficiente e um produto final de maior qualidade! 🚀

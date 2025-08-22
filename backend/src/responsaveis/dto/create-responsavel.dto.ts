@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsOptional, IsNotEmpty, Length } from 'class-validator';
+import { IsString, IsEmail, IsOptional, IsNotEmpty, Length, IsNumber, IsIn } from 'class-validator';
 
 export class CreateResponsavelDto {
   @IsString()
@@ -21,37 +21,42 @@ export class CreateResponsavelDto {
   telefone: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @Length(1, 200)
-  endereco?: string;
+  endereco: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @Length(1, 100)
-  cidade?: string;
+  cidade: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @Length(2, 2)
-  estado?: string;
+  estado: string;
 
   @IsString()
-  @IsOptional()
+  @IsNotEmpty()
   @Length(8, 9)
-  cep?: string;
+  cep: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @IsIn([1, 2, 3], { message: 'tipoPessoa deve ser 1 (Pessoa Física), 2 (Pessoa Jurídica) ou 3 (Estrangeiro)' })
+  tipoPessoa: number;
 
   @IsString()
   @IsOptional()
-  @Length(1, 20)
+  @Length(0, 20)
   inscricaoEstadual?: string;
 
   @IsString()
   @IsOptional()
-  @Length(1, 20)
+  @Length(0, 20)
   inscricaoMunicipal?: string;
 
   @IsString()
   @IsOptional()
-  @Length(1, 100)
+  @Length(0, 100)
   razaoSocial?: string;
 }

@@ -94,6 +94,7 @@ export class ResponsaveisController {
       inscricaoEstadual: responsavel.inscricaoEstadual,
       inscricaoMunicipal: responsavel.inscricaoMunicipal,
       razaoSocial: responsavel.razaoSocial,
+      tipoPessoa: responsavel.tipoPessoa,
       ativo: responsavel.ativo,
       quantidadeAlunos: responsavel.alunos ? responsavel.alunos.filter(aluno => aluno.ativo).length : 0,
       criadoEm: responsavel.criadoEm,

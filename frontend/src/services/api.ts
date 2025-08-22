@@ -39,4 +39,67 @@ api.interceptors.response.use(
   }
 );
 
+// Tipos de resposta da API
+interface LoginRequest {
+  email: string;
+  senha: string;
+}
+
+interface LoginResponse {
+  access_token: string;
+  user: {
+    id: number;
+    email: string;
+    nome: string;
+    tipo: 'admin' | 'operador';
+    ativo: boolean;
+  };
+}
+
+interface ValidateTokenResponse {
+  user: {
+    id: number;
+    email: string;
+    nome: string;
+    tipo: 'admin' | 'operador';
+    ativo: boolean;
+  };
+}
+
+// Serviços de autenticação
+export const authService = {
+  async login(credentials: LoginRequest): Promise<LoginResponse> {
+    const response = await api.post('/auth/login', credentials);
+    return response.data;
+  },
+
+  async validateToken(): Promise<ValidateTokenResponse> {
+    const response = await api.post('/auth/validate-token');
+    return response.data;
+  },
+
+  async getProfile(): Promise<ValidateTokenResponse> {
+    const response = await api.get('/auth/profile');
+    return response.data;
+  },
+
+  // Setup interceptor para auto-logout
+  setupResponseInterceptor(onTokenExpiry: () => void): number {
+    return api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          onTokenExpiry();
+        }
+        return Promise.reject(error);
+      }
+    );
+  },
+
+  // Remover interceptor
+  removeResponseInterceptor(interceptorId: number): void {
+    api.interceptors.response.eject(interceptorId);
+  }
+};
+
 export default api;

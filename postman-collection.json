@@ -366,7 +366,57 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"Maria Silva Santos\",\n  \"cpfCnpj\": \"12345678901\",\n  \"email\": \"maria.silva@email.com\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"endereco\": \"Rua das Flores, 123\",\n  \"cidade\": \"São Paulo\",\n  \"estado\": \"SP\",\n  \"cep\": \"01234-567\",\n  \"inscricaoEstadual\": \"\",\n  \"inscricaoMunicipal\": \"\",\n  \"razaoSocial\": \"\"\n}"
+              "raw": "{\n  \"nome\": \"Maria Silva Santos\",\n  \"cpfCnpj\": \"12345678901\",\n  \"email\": \"maria.silva@email.com\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"endereco\": \"Rua das Flores, 123\",\n  \"cidade\": \"São Paulo\",\n  \"estado\": \"SP\",\n  \"cep\": \"01234-567\",\n  \"tipoPessoa\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis"]
+            }
+          }
+        },
+        {
+          "name": "Criar Responsável (Pessoa Jurídica)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Empresa ABC Ltda\",\n  \"cpfCnpj\": \"12345678000195\",\n  \"email\": \"financeiro@empresaabc.com.br\",\n  \"telefone\": \"(11) 3333-4444\",\n  \"endereco\": \"Av. Empresarial, 1000 - Sala 501\",\n  \"cidade\": \"São Paulo\",\n  \"estado\": \"SP\",\n  \"cep\": \"01234-567\",\n  \"tipoPessoa\": 2,\n  \"inscricaoEstadual\": \"123456789\",\n  \"inscricaoMunicipal\": \"987654321\",\n  \"razaoSocial\": \"Empresa ABC Educação Ltda\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/responsaveis",
+              "host": ["{{baseUrl}}"],
+              "path": ["responsaveis"]
+            }
+          }
+        },
+        {
+          "name": "Criar Responsável (Pessoa Física - com campos vazios)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"João da Silva\",\n  \"cpfCnpj\": \"12345678901\",\n  \"email\": \"joao@email.com\",\n  \"telefone\": \"(11) 9999-8888\",\n  \"endereco\": \"Rua das Flores, 123\",\n  \"cidade\": \"São Paulo\",\n  \"estado\": \"SP\",\n  \"cep\": \"01234-567\",\n  \"tipoPessoa\": 1,\n  \"inscricaoEstadual\": \"\",\n  \"inscricaoMunicipal\": \"\",\n  \"razaoSocial\": \"\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/responsaveis",
@@ -563,7 +613,32 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"nome\": \"João Silva Santos\",\n  \"matricula\": \"2025001\",\n  \"dataNascimento\": \"2015-03-15\",\n  \"cpf\": \"12345678901\",\n  \"rg\": \"123456789\",\n  \"endereco\": \"Rua das Flores, 123 - Centro\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"email\": \"joao.santos@email.com\",\n  \"turmaId\": 1,\n  \"responsavelFinanceiroId\": 1,\n  \"valorMensalidadeCustomizado\": 500.00,\n  \"percentualDesconto\": 15,\n  \"valorDesconto\": 25.00,\n  \"observacoesMensalidade\": \"Aluno com bolsa de estudos - desconto aplicado\"\n}"
+              "raw": "{\n  \"nome\": \"João Silva Santos\",\n  \"matricula\": \"2025001\",\n  \"dataNascimento\": \"2015-03-15\",\n  \"cpf\": \"12345678901\",\n  \"rg\": \"123456789\",\n  \"endereco\": \"Rua das Flores, 123 - Centro\",\n  \"telefone\": \"(11) 99999-9999\",\n  \"email\": \"joao.santos@email.com\",\n  \"turmaId\": 1,\n  \"responsavelFinanceiroId\": 1,\n  \"valorMensalidadeCustomizado\": 400.00,\n  \"observacoesMensalidade\": \"Aluno com valor customizado - descontos calculados automaticamente\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alunos",
+              "host": ["{{baseUrl}}"],
+              "path": ["alunos"]
+            }
+          }
+        },
+        {
+          "name": "Criar Aluno (Herda valor da turma)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Maria Oliveira Costa\",\n  \"matricula\": \"2025002\",\n  \"dataNascimento\": \"2016-08-22\",\n  \"cpf\": \"98765432100\",\n  \"rg\": \"987654321\",\n  \"endereco\": \"Av. Principal, 456 - Jardins\",\n  \"telefone\": \"(11) 88888-8888\",\n  \"email\": \"maria.oliveira@email.com\",\n  \"turmaId\": 1,\n  \"responsavelFinanceiroId\": 1,\n  \"observacoesMensalidade\": \"Aluno que herda o valor da mensalidade da turma\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/alunos",
@@ -692,7 +767,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"valorMensalidadeCustomizado\": 450.00,\n  \"percentualDesconto\": 10,\n  \"valorDesconto\": 50.00,\n  \"observacoesMensalidade\": \"Desconto especial - bolsa de estudos parcial\"\n}"
+              "raw": "{\n  \"valorMensalidadeCustomizado\": 350.00,\n  \"observacoesMensalidade\": \"Valor customizado atualizado - descontos calculados automaticamente pelo backend\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/alunos/1/mensalidade",

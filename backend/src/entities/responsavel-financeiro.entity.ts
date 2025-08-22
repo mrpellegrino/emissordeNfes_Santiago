@@ -40,6 +40,9 @@ export class ResponsavelFinanceiro {
   @Column({ length: 100, nullable: true })
   razaoSocial: string; // Para quando for CNPJ
 
+  @Column({ type: 'int', comment: '1=Pessoa Física, 2=Pessoa Jurídica, 3=Estrangeiro' })
+  tipoPessoa: number;
+
   @Column({ default: true })
   ativo: boolean;
 
@@ -52,8 +55,13 @@ export class ResponsavelFinanceiro {
   @OneToMany(() => Aluno, aluno => aluno.responsavelFinanceiro)
   alunos: Aluno[];
 
-  // Método helper para determinar se é CPF ou CNPJ
-  get tipoPessoa(): 'fisica' | 'juridica' {
-    return this.cpfCnpj.length === 11 ? 'fisica' : 'juridica';
+  // Método helper para obter descrição do tipo de pessoa
+  get tipoPessoaDescricao(): string {
+    switch (this.tipoPessoa) {
+      case 1: return 'Pessoa Física';
+      case 2: return 'Pessoa Jurídica';
+      case 3: return 'Estrangeiro';
+      default: return 'Não definido';
+    }
   }
 }
